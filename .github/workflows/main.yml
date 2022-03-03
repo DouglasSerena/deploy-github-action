@@ -9,7 +9,7 @@ jobs:
         usa: actions/checkout@v2
       - name: Hello world action step
         id: hello
-        uses: ./../../
+        uses: ./
         with:
           firebase-id: 'Mona the Octocat'
       - name: Get the output time
