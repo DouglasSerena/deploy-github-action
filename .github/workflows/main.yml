@@ -6,7 +6,7 @@ jobs:
     name: A job to say hello
     steps:
       - nome: Checkout
-        use: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Hello world action step
         id: hello
         uses: ./
