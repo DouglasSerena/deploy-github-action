@@ -10,33 +10,36 @@ export class GithubCreateTag implements IGithubCreateTag {
   public async create(
     owner: string,
     repo: string,
+    sha: string,
     tag: IMetadataTagModel
   ): Promise<void> {
-    await this._repository.createTag(owner, repo, tag);
+    await this._repository.createTag(owner, repo, sha, tag);
   }
 
   public async createAlpha(
     owner: string,
     repo: string,
+    sha: string,
     tag: IMetadataTagModel
   ): Promise<void> {
     this._incrementPatch(tag.version);
     this._incrementNumber(tag);
     tag.name = VERSION_NAME.ALPHA;
 
-    await this.create(owner, repo, tag);
+    await this.create(owner, repo, sha, tag);
   }
 
   public async createRelease(
     owner: string,
     repo: string,
+    sha: string,
     tag: IMetadataTagModel
   ): Promise<void> {
     this._incrementMinor(tag.version);
     this._incrementNumber(tag);
     tag.name = VERSION_NAME.RELEASE;
 
-    await this.create(owner, repo, tag);
+    await this.create(owner, repo, sha, tag);
   }
 
   private _incrementNumber(tag: IMetadataTagModel): IMetadataTagModel {

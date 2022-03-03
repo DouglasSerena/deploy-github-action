@@ -15,6 +15,7 @@ export class GithubRepository {
   public async createTag(
     owner: string,
     repo: string,
+    sha: string,
     tag: IMetadataTagModel
   ): Promise<void> {
     const { major, minor, patch } = tag.version;
@@ -26,7 +27,7 @@ export class GithubRepository {
         owner: owner,
         tag: version,
         message: `New tag ${version}`,
-        object: 'object',
+        object: sha,
         type: 'commit',
       })
       .then(({ data }) => data);
@@ -34,7 +35,7 @@ export class GithubRepository {
 
   private _prepareTags(tags: Omit<ITagModel, 'metadata'>[]): ITagModel[] {
     return tags.reduce((tags, tag) => {
-      const match = /(\w+)-([\d\.]+)_(\d+)/g.exec(tag.name)!;
+      const match = /(\w+)-([\d\.]+)_(\d+)/gi.exec(tag.name)!;
 
       if (!match) {
         return tags;

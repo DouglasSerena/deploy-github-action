@@ -8508,7 +8508,7 @@ class GithubRepository {
                 .then(({ data }) => this._prepareTags(data));
         });
     }
-    createTag(owner, repo, tag) {
+    createTag(owner, repo, sha, tag) {
         return __awaiter(this, void 0, void 0, function* () {
             const { major, minor, patch } = tag.version;
             const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
@@ -8518,7 +8518,7 @@ class GithubRepository {
                 owner: owner,
                 tag: version,
                 message: `New tag ${version}`,
-                object: 'object',
+                object: sha,
                 type: 'commit',
             })
                 .then(({ data }) => data);
@@ -8526,7 +8526,7 @@ class GithubRepository {
     }
     _prepareTags(tags) {
         return tags.reduce((tags, tag) => {
-            const match = /(\w+)-([\d\.]+)_(\d+)/g.exec(tag.name);
+            const match = /(\w+)-([\d\.]+)_(\d+)/gi.exec(tag.name);
             if (!match) {
                 return tags;
             }
@@ -8568,25 +8568,25 @@ class GithubCreateTag {
     constructor(_repository) {
         this._repository = _repository;
     }
-    create(owner, repo, tag) {
+    create(owner, repo, sha, tag) {
         return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
-            yield this._repository.createTag(owner, repo, tag);
+            yield this._repository.createTag(owner, repo, sha, tag);
         });
     }
-    createAlpha(owner, repo, tag) {
+    createAlpha(owner, repo, sha, tag) {
         return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
             this._incrementPatch(tag.version);
             this._incrementNumber(tag);
             tag.name = VERSION_NAME.ALPHA;
-            yield this.create(owner, repo, tag);
+            yield this.create(owner, repo, sha, tag);
         });
     }
-    createRelease(owner, repo, tag) {
+    createRelease(owner, repo, sha, tag) {
         return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
             this._incrementMinor(tag.version);
             this._incrementNumber(tag);
             tag.name = VERSION_NAME.RELEASE;
-            yield this.create(owner, repo, tag);
+            yield this.create(owner, repo, sha, tag);
         });
     }
     _incrementNumber(tag) {
@@ -8647,14 +8647,15 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         // const [success, error] = await onTry(async () => {
-        const { owner, repo } = github.context.repo;
+        const context = github.context;
+        const { owner, repo } = context.repo;
         const api = github.getOctokit(core.getInput('token-pat'));
         const githubRepository = new GithubRepository(api);
         const githubGetLastTag = new GithubGetLastTag(githubRepository);
         const githubCreateTag = new GithubCreateTag(githubRepository);
         const tag = yield githubGetLastTag.tag(owner, repo);
         if (tag.metadata) {
-            yield githubCreateTag.createAlpha(owner, repo, tag.metadata);
+            yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata);
         }
         else {
             throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');

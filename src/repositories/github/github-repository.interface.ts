@@ -3,5 +3,10 @@ import { ITagModel } from '../../domain/github/tag.model';
 
 export interface IGithubRepository {
   getTags(owner: string, repo: string): Promise<ITagModel[]>;
-  createTag(owner: string, repo: string, tag: IMetadataTagModel): Promise<void>;
+  createTag(
+    owner: string,
+    repo: string,
+    sha: string,
+    tag: IMetadataTagModel
+  ): Promise<void>;
 }
