@@ -1,0 +1,18 @@
+{
+  "name": "android-deploy-github-action",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "repository": "git@github.com:DouglasSerena/android-deploy-github-action.git",
+  "author": "DouglasSerena <douglas222serena@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  }
+}
