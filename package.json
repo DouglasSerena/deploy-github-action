@@ -6,7 +6,7 @@
   "author": "DouglasSerena <douglas222serena@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "ncc build -o action src/index.ts --license licenses.txt"
+    "build": "ncc build --out action src/index.ts"
   },
   "devDependencies": {
     "tslib": "^2.3.1",

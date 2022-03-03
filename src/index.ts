@@ -1,8 +1,9 @@
-import core from '@actions/core';
-import github from '@actions/github';
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 import { onTry } from './utils/on-try';
 
 async function main() {
+  console.log(core, github);
   const [success, error] = await onTry(() => {
     console.log(core.getInput('firebase-id'));
 
