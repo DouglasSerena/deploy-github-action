@@ -8639,10 +8639,19 @@ class GithubGetLastTagUseCase {
         this._repository = _repository;
     }
     tag() {
-        var _a;
         return github_get_last_tag_usecase_awaiter(this, void 0, void 0, function* () {
             const tags = yield this._repository.getTags();
-            return (_a = tags[0]) !== null && _a !== void 0 ? _a : null;
+            return tags.reduce((last, tag) => {
+                if (tag.metadata) {
+                    if (!last) {
+                        return tag;
+                    }
+                    if (tag.metadata.number > last.metadata.number) {
+                        return tag;
+                    }
+                }
+                return last;
+            }, null);
         });
     }
 }
