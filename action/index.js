@@ -8576,7 +8576,7 @@ function main() {
             const api = github.getOctokit(core.getInput('token-pat'));
             const githubRepository = new GithubRepository(api);
             const githubGetLastTag = new GithubGetLastTag(githubRepository);
-            console.log(githubGetLastTag.tag(context.repo.owner, context.repo.repo));
+            console.log(yield githubGetLastTag.tag(context.repo.owner, context.repo.repo));
         }));
         if (!error) {
             return;

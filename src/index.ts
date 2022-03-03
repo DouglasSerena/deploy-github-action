@@ -12,7 +12,7 @@ async function main() {
     const githubRepository = new GithubRepository(api);
     const githubGetLastTag = new GithubGetLastTag(githubRepository);
 
-    console.log(githubGetLastTag.tag(context.repo.owner, context.repo.repo));
+    console.log(await githubGetLastTag.tag(context.repo.owner, context.repo.repo));
   });
 
   if (!error) {
