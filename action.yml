@@ -1,16 +1,13 @@
-name: 'Android Deploy'
-description: 'Deploy apk android to firebase'
-main: 'action/index.js'
+name: 'Hello World'
+description: 'Greet someone and record the time'
 inputs:
-  who-to-greet: # id of input
+  firebase-id: # id of input
     description: 'Who to greet'
     required: true
-    default: 'World'
+    default: 'top'
 outputs:
   time: # id of output
     description: 'The time we greeted you'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.who-to-greet }}
+  using: 'node16'
+  main: 'action/index.js'
