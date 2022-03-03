@@ -8525,13 +8525,13 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         console.log(core, github);
-        const [success, error] = yield onTry(() => {
-            console.log(core.getInput('firebase-id'));
+        const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
+            const token = core.getInput('token-pat');
             const time = new Date().toTimeString();
             core.setOutput('time', time);
-            const payload = JSON.stringify(github.context.payload, undefined, 2);
-            console.log(`The event payload: ${payload}`);
-        });
+            console.log(yield github.getOctokit(token)
+                .request('GET /repos/{owner}/{repo}/git/tags'));
+        }));
         if (!error) {
             return;
         }
