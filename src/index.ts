@@ -5,6 +5,7 @@ import { onTry } from './utils/on-try';
 async function main() {
   console.log(core, github);
   const [success, error] = await onTry(async () => {
+    const context = github.context;
     const token = core.getInput('token-pat');
 
     const time = new Date().toTimeString();
@@ -13,7 +14,10 @@ async function main() {
     console.log(
       await github
         .getOctokit(token)
-        .request('GET /repos/{owner}/{repo}/git/tags')
+        .request('GET /repos/{owner}/{repo}/git/tags', {
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+        })
     );
   });
 
