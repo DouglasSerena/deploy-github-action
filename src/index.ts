@@ -38,6 +38,8 @@ async function main() {
     return;
   }
 
+  core.debug(`Message: ${error.message}\n${error.stack}`);
+
   return core.setFailed(error.message);
 }
 
