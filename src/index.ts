@@ -1,22 +1,18 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { GithubRepository } from './repositories/github/github.repository';
+import { GithubGetLastTag } from './usecases/github/get-last-tag.usecase';
 import { onTry } from './utils/on-try';
 
 async function main() {
   const [success, error] = await onTry(async () => {
     const context = github.context;
-    const token = core.getInput('token-pat');
+    const api = github.getOctokit(core.getInput('token-pat'));
 
-    const time = new Date().toTimeString();
-    core.setOutput('time', time);
+    const githubRepository = new GithubRepository(api);
+    const githubGetLastTag = new GithubGetLastTag(githubRepository);
 
-    console.log(context.repo);
-    console.log(
-      await github.getOctokit(token).request('GET /repos/{owner}/{repo}/tags', {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-      })
-    );
+    console.log(githubGetLastTag.tag(context.repo.owner, context.repo.repo));
   });
 
   if (!error) {

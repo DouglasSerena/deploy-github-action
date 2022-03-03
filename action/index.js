@@ -8487,7 +8487,7 @@ __nccwpck_require__.r(__webpack_exports__);
 var core = __nccwpck_require__(2186);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(5438);
-;// CONCATENATED MODULE: ./src/utils/on-try.ts
+;// CONCATENATED MODULE: ./src/repositories/github/github.repository.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8497,8 +8497,53 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class GithubRepository {
+    constructor(_api) {
+        this._api = _api;
+    }
+    getTags(owner, repo) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._api
+                .request('GET /repos/{owner}/{repo}/tags', { owner, repo })
+                .then(({ data }) => data);
+        });
+    }
+}
+
+;// CONCATENATED MODULE: ./src/usecases/github/get-last-tag.usecase.ts
+var get_last_tag_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class GithubGetLastTag {
+    constructor(_repository) {
+        this._repository = _repository;
+    }
+    tag(owner, repo) {
+        return get_last_tag_usecase_awaiter(this, void 0, void 0, function* () {
+            const tags = yield this._repository.getTags(owner, repo);
+            return tags[0];
+        });
+    }
+}
+
+;// CONCATENATED MODULE: ./src/utils/on-try.ts
+var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 function onTry(callback) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return on_try_awaiter(this, void 0, void 0, function* () {
         try {
             const result = yield callback();
             return [result, null];
@@ -8522,18 +8567,16 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
+
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
             const context = github.context;
-            const token = core.getInput('token-pat');
-            const time = new Date().toTimeString();
-            core.setOutput('time', time);
-            console.log(context.repo);
-            console.log(yield github.getOctokit(token).request('GET /repos/{owner}/{repo}/tags', {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-            }));
+            const api = github.getOctokit(core.getInput('token-pat'));
+            const githubRepository = new GithubRepository(api);
+            const githubGetLastTag = new GithubGetLastTag(githubRepository);
+            console.log(githubGetLastTag.tag(context.repo.owner, context.repo.repo));
         }));
         if (!error) {
             return;
