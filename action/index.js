@@ -8529,7 +8529,7 @@ function main() {
             const token = core.getInput('token-pat');
             const time = new Date().toTimeString();
             core.setOutput('time', time);
-            console.log(context);
+            console.log(context.repo);
             console.log(yield github.getOctokit(token)
                 .request('GET /repos/{owner}/{repo}/git/tags', {
                 owner: context.repo.owner,
@@ -8539,7 +8539,7 @@ function main() {
         if (!error) {
             return;
         }
-        core.setFailed(error.message);
+        return core.setFailed(error.message);
     });
 }
 main();

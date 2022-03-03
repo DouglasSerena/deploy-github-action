@@ -10,7 +10,7 @@ async function main() {
     const time = new Date().toTimeString();
     core.setOutput('time', time);
 
-    console.log(context);
+    console.log(context.repo);
     console.log(
       await github
         .getOctokit(token)
@@ -25,7 +25,7 @@ async function main() {
     return;
   }
 
-  core.setFailed(error.message);
+  return core.setFailed(error.message);
 }
 
 main();
