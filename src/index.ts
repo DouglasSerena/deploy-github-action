@@ -4,14 +4,17 @@ import { onTry } from './utils/on-try';
 
 async function main() {
   console.log(core, github);
-  const [success, error] = await onTry(() => {
-    console.log(core.getInput('firebase-id'));
+  const [success, error] = await onTry(async () => {
+    const token = core.getInput('token-pat');
 
     const time = new Date().toTimeString();
     core.setOutput('time', time);
 
-    const payload = JSON.stringify(github.context.payload, undefined, 2);
-    console.log(`The event payload: ${payload}`);
+    console.log(
+      await github
+        .getOctokit(token)
+        .request('GET /repos/{owner}/{repo}/git/tags')
+    );
   });
 
   if (!error) {

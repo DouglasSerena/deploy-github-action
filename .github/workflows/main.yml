@@ -16,5 +16,7 @@ jobs:
         uses: ./
         with:
           firebase-id: 'Mona the Octocat'
+          token-pat: ${{ secrets.TOKEN_PAT }}
+
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
