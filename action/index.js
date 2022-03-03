@@ -8629,6 +8629,28 @@ class GithubGetLastTag {
     }
 }
 
+;// CONCATENATED MODULE: ./src/utils/on-try.ts
+var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+function onTry(callback) {
+    return on_try_awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield callback();
+            return [result, null];
+        }
+        catch (error) {
+            return [null, error];
+        }
+    });
+}
+
 ;// CONCATENATED MODULE: ./src/index.ts
 var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -8644,27 +8666,29 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
-        // const [success, error] = await onTry(async () => {
-        const context = github.context;
-        const { owner, repo } = context.repo;
-        const api = github.getOctokit(core.getInput('token-pat'));
-        const githubRepository = new GithubRepository(api);
-        const githubGetLastTag = new GithubGetLastTag(githubRepository);
-        const githubCreateTag = new GithubCreateTag(githubRepository);
-        const tag = yield githubGetLastTag.tag(owner, repo);
-        if (tag.metadata) {
-            console.log(yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata));
+        const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
+            const context = github.context;
+            const { owner, repo } = context.repo;
+            const api = github.getOctokit(core.getInput('token-pat'));
+            const githubRepository = new GithubRepository(api);
+            const githubGetLastTag = new GithubGetLastTag(githubRepository);
+            const githubCreateTag = new GithubCreateTag(githubRepository);
+            const tag = yield githubGetLastTag.tag(owner, repo);
+            core.info(`Last tag: ${tag.name}`);
+            if (tag.metadata) {
+                console.log(yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata));
+            }
+            else {
+                throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');
+            }
+        }));
+        if (!error) {
+            return;
         }
-        else {
-            throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');
-        }
-        // });
-        // if (!error) {
-        //   return;
-        // }
-        // return core.setFailed(error.message);
+        return core.setFailed(error.message);
     });
 }
 main();

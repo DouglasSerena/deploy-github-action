@@ -6,33 +6,39 @@ import { GithubGetLastTag } from './usecases/github/get-last-tag.usecase';
 import { onTry } from './utils/on-try';
 
 async function main() {
-  // const [success, error] = await onTry(async () => {
-  const context = github.context;
-  const { owner, repo } = context.repo;
-  const api = github.getOctokit(core.getInput('token-pat'));
+  const [success, error] = await onTry(async () => {
+    const context = github.context;
+    const { owner, repo } = context.repo;
+    const api = github.getOctokit(core.getInput('token-pat'));
 
-  const githubRepository = new GithubRepository(api);
-  const githubGetLastTag = new GithubGetLastTag(githubRepository);
-  const githubCreateTag = new GithubCreateTag(githubRepository);
+    const githubRepository = new GithubRepository(api);
+    const githubGetLastTag = new GithubGetLastTag(githubRepository);
+    const githubCreateTag = new GithubCreateTag(githubRepository);
 
-  const tag = await githubGetLastTag.tag(owner, repo);
+    const tag = await githubGetLastTag.tag(owner, repo);
 
-  if (tag.metadata) {
-    console.log(
-      await githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata)
-    );
-  } else {
-    throw new Error(
-      'Não a como gerar um tag devido a não haver metadados da versão.'
-    );
+    core.info(`Last tag: ${tag.name}`);
+    if (tag.metadata) {
+      console.log(
+        await githubCreateTag.createAlpha(
+          owner,
+          repo,
+          context.sha,
+          tag.metadata
+        )
+      );
+    } else {
+      throw new Error(
+        'Não a como gerar um tag devido a não haver metadados da versão.'
+      );
+    }
+  });
+
+  if (!error) {
+    return;
   }
-  // });
 
-  // if (!error) {
-  //   return;
-  // }
-
-  // return core.setFailed(error.message);
+  return core.setFailed(error.message);
 }
 
 main();
