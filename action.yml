@@ -1,5 +1,6 @@
 name: 'Android Deploy'
 description: 'Deploy apk android to firebase'
+main: 'action/index.js'
 inputs:
   who-to-greet: # id of input
     description: 'Who to greet'

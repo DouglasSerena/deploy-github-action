@@ -19,6 +19,8 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const [success, error] = yield (0, on_try_1.onTry)(() => {
             console.log(core_1.default.getInput('firebase-id'));
+            const time = new Date().toTimeString();
+            core_1.default.setOutput('time', time);
             const payload = JSON.stringify(github_1.default.context.payload, undefined, 2);
             console.log(`The event payload: ${payload}`);
         });

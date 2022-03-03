@@ -1,0 +1,14 @@
+on: [push]
+
+jobs:
+  android_deploy:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - name: Hello world action step
+        id: hello
+        uses: ./../../action
+        with:
+          firebase-id: 'Mona the Octocat'
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
