@@ -27,6 +27,9 @@ export class Action {
     };
 
     const newTag = await githubCreateTagUseCase.createAlpha(metadata);
-    await githubRegisterTagUseCase.register(newTag);
+    this._github.core.info(JSON.stringify(newTag));
+    this._github.core.info(
+      JSON.stringify(await githubRegisterTagUseCase.register(newTag))
+    );
   }
 }
