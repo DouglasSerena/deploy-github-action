@@ -8701,8 +8701,8 @@ class Action {
                 version: { major: 1, minor: 0, patch: 0 },
             };
             const newTag = yield githubCreateTagUseCase.createAlpha(metadata);
-            this._github.core.info(JSON.stringify(newTag));
-            this._github.core.info(JSON.stringify(yield githubRegisterTagUseCase.register(newTag)));
+            console.log(JSON.stringify(newTag));
+            console.log(JSON.stringify(yield githubRegisterTagUseCase.register(newTag)));
         });
     }
 }
