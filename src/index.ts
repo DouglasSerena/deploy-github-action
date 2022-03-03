@@ -3,7 +3,6 @@ import * as github from '@actions/github';
 import { onTry } from './utils/on-try';
 
 async function main() {
-  console.log(core, github);
   const [success, error] = await onTry(async () => {
     const context = github.context;
     const token = core.getInput('token-pat');
@@ -11,6 +10,7 @@ async function main() {
     const time = new Date().toTimeString();
     core.setOutput('time', time);
 
+    console.log(context);
     console.log(
       await github
         .getOctokit(token)

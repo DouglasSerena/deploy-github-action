@@ -8524,12 +8524,12 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
-        console.log(core, github);
         const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
             const context = github.context;
             const token = core.getInput('token-pat');
             const time = new Date().toTimeString();
             core.setOutput('time', time);
+            console.log(context);
             console.log(yield github.getOctokit(token)
                 .request('GET /repos/{owner}/{repo}/git/tags', {
                 owner: context.repo.owner,
