@@ -8,15 +8,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: DouglasSerena/android-deploy-github-action
+          repository: DouglasSerena/deploy-github-action
           token: ${{ secrets.TOKEN_PAT }}
 
       - name: Hello world action step
         id: hello
         uses: ./
         with:
-          firebase-id: 'Mona the Octocat'
-          token-pat: ${{ secrets.TOKEN_PAT }}
-
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+          token: ${{ secrets.TOKEN_PAT }}

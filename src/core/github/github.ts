@@ -15,7 +15,7 @@ export class Github implements IGithub {
   public core: typeof core = core;
 
   constructor() {
-    this.token = core.getInput(GITHUB_INPUT.TOKEN_ID);
+    this.token = core.getInput(GITHUB_INPUT.TOKEN);
     this.context = github.context;
 
     this.owner = this.context.repo.owner;

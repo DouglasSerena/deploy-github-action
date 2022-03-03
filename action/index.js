@@ -8713,8 +8713,7 @@ var github = __nccwpck_require__(5438);
 ;// CONCATENATED MODULE: ./src/domain/enums/github/github-input.enum.ts
 var GITHUB_INPUT;
 (function (GITHUB_INPUT) {
-    GITHUB_INPUT["TOKEN_ID"] = "token-id";
-    GITHUB_INPUT["FIREBASE_ID"] = "firebase-id";
+    GITHUB_INPUT["TOKEN"] = "token";
 })(GITHUB_INPUT || (GITHUB_INPUT = {}));
 
 ;// CONCATENATED MODULE: ./src/core/github/github.ts
@@ -8724,7 +8723,7 @@ var GITHUB_INPUT;
 class Github {
     constructor() {
         this.core = core;
-        this.token = core.getInput(GITHUB_INPUT.TOKEN_ID);
+        this.token = core.getInput(GITHUB_INPUT.TOKEN);
         this.context = github.context;
         this.owner = this.context.repo.owner;
         this.repo = this.context.repo.repo;

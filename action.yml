@@ -1,11 +1,7 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  firebase-id: # id of input
-    description: 'Who to greet'
-    required: true
-    default: 'top'
-  token-pat:
+  token:
     required: true
 outputs:
   time: # id of output
