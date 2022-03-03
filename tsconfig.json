@@ -13,7 +13,6 @@
   },
   "exclude": [
     "action",
-    "node_modules"
   ],
   "include": [
     "**/*"
