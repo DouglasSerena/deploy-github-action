@@ -1,5 +1,5 @@
 /** @description v{major}.{minor}.{patch} */
-export interface IVersionModel {
+export interface IVersion {
   major: number;
   minor: number;
   patch: number;

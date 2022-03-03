@@ -10,9 +10,10 @@
     "deploy": "yarn build && git add . && git commit -m \"deploy: new version\" && git push"
   },
   "devDependencies": {
+    "@octokit/types": "^6.34.0",
+    "@vercel/ncc": "^0.33.3",
     "tslib": "^2.3.1",
-    "typescript": "^4.6.2",
-    "@vercel/ncc": "^0.33.3"
+    "typescript": "^4.6.2"
   },
   "dependencies": {
     "@actions/core": "^1.6.0",

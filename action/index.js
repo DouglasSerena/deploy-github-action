@@ -8483,11 +8483,14 @@ var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __nccwpck_require__(5438);
-;// CONCATENATED MODULE: ./src/repositories/github/github.repository.ts
+;// CONCATENATED MODULE: ./src/domain/enums/github/github-version-name.enum.ts
+var GITHUB_VERSION_NAME;
+(function (GITHUB_VERSION_NAME) {
+    GITHUB_VERSION_NAME["RELEASE"] = "release";
+    GITHUB_VERSION_NAME["ALPHA"] = "alpha";
+})(GITHUB_VERSION_NAME || (GITHUB_VERSION_NAME = {}));
+
+;// CONCATENATED MODULE: ./src/repositories/github/github-tag.repository.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8497,29 +8500,50 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-class GithubRepository {
-    constructor(_api) {
-        this._api = _api;
+class GithubTagRepository {
+    constructor(_github) {
+        this._github = _github;
     }
-    getTags(owner, repo) {
+    get owner() {
+        return this._github.owner;
+    }
+    get repo() {
+        return this._github.repo;
+    }
+    getTags() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._api
-                .request('GET /repos/{owner}/{repo}/tags', { owner, repo })
+            return yield this._github.api
+                .request('GET /repos/{owner}/{repo}/tags', {
+                owner: this.owner,
+                repo: this.repo,
+            })
                 .then(({ data }) => this._prepareTags(data));
         });
     }
-    createTag(owner, repo, sha, tag) {
+    createTag(tag) {
         return __awaiter(this, void 0, void 0, function* () {
             const { major, minor, patch } = tag.version;
             const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
-            return yield this._api
+            return yield this._github.api
                 .request('POST /repos/{owner}/{repo}/git/tags', {
-                repo: repo,
-                owner: owner,
+                owner: this.owner,
+                repo: this.repo,
                 tag: version,
                 message: `New tag ${version}`,
-                object: sha,
+                object: this._github.context.sha,
                 type: 'commit',
+            })
+                .then(({ data }) => data);
+        });
+    }
+    registerTag(tag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._github.api
+                .request('POST /repos/{owner}/{repo}/git/refs', {
+                owner: this.owner,
+                repo: this.repo,
+                ref: `refs/tags/${tag.tag}`,
+                sha: tag.sha,
             })
                 .then(({ data }) => data);
         });
@@ -8546,15 +8570,8 @@ class GithubRepository {
     }
 }
 
-;// CONCATENATED MODULE: ./src/domain/version-name.enum.ts
-var VERSION_NAME;
-(function (VERSION_NAME) {
-    VERSION_NAME["RELEASE"] = "release";
-    VERSION_NAME["ALPHA"] = "alpha";
-})(VERSION_NAME || (VERSION_NAME = {}));
-
-;// CONCATENATED MODULE: ./src/usecases/github/create-tag.usecasecopy.ts
-var create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/usecases/github/github-create-tag.usecasecopy.ts
+var github_create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -8564,29 +8581,29 @@ var create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || funct
     });
 };
 
-class GithubCreateTag {
+class GithubCreateTagUseCase {
     constructor(_repository) {
         this._repository = _repository;
     }
-    create(owner, repo, sha, tag) {
-        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
-            return yield this._repository.createTag(owner, repo, sha, tag);
+    create(tag) {
+        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+            return yield this._repository.createTag(tag);
         });
     }
-    createAlpha(owner, repo, sha, tag) {
-        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+    createAlpha(tag) {
+        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
             this._incrementPatch(tag.version);
             this._incrementNumber(tag);
-            tag.name = VERSION_NAME.ALPHA;
-            return yield this.create(owner, repo, sha, tag);
+            tag.name = GITHUB_VERSION_NAME.ALPHA;
+            return yield this.create(tag);
         });
     }
-    createRelease(owner, repo, sha, tag) {
-        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+    createRelease(tag) {
+        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
             this._incrementMinor(tag.version);
             this._incrementNumber(tag);
-            tag.name = VERSION_NAME.RELEASE;
-            return yield this.create(owner, repo, sha, tag);
+            tag.name = GITHUB_VERSION_NAME.RELEASE;
+            return yield this.create(tag);
         });
     }
     _incrementNumber(tag) {
@@ -8607,8 +8624,8 @@ class GithubCreateTag {
     }
 }
 
-;// CONCATENATED MODULE: ./src/usecases/github/get-last-tag.usecase.ts
-var get_last_tag_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/usecases/github/github-get-last-tag.usecase.ts
+var github_get_last_tag_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -8617,20 +8634,21 @@ var get_last_tag_usecase_awaiter = (undefined && undefined.__awaiter) || functio
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-class GithubGetLastTag {
+class GithubGetLastTagUseCase {
     constructor(_repository) {
         this._repository = _repository;
     }
-    tag(owner, repo) {
-        return get_last_tag_usecase_awaiter(this, void 0, void 0, function* () {
-            const tags = yield this._repository.getTags(owner, repo);
-            return tags[0];
+    tag() {
+        var _a;
+        return github_get_last_tag_usecase_awaiter(this, void 0, void 0, function* () {
+            const tags = yield this._repository.getTags();
+            return (_a = tags[0]) !== null && _a !== void 0 ? _a : null;
         });
     }
 }
 
-;// CONCATENATED MODULE: ./src/utils/on-try.ts
-var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/usecases/github/github-register-tag.usecase.ts
+var github_register_tag_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -8639,60 +8657,93 @@ var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function onTry(callback) {
-    return on_try_awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield callback();
-            return [result, null];
-        }
-        catch (error) {
-            return [null, error];
-        }
+class GithubRegisterTagUseCase {
+    constructor(_repository) {
+        this._repository = _repository;
+    }
+    register(newTag) {
+        return github_register_tag_usecase_awaiter(this, void 0, void 0, function* () {
+            return this._repository.registerTag(newTag);
+        });
+    }
+}
+
+;// CONCATENATED MODULE: ./src/action.ts
+var action_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
+};
+
+
+
+
+
+class Action {
+    constructor(_github) {
+        this._github = _github;
+    }
+    exec() {
+        var _a;
+        return action_awaiter(this, void 0, void 0, function* () {
+            const githubRepository = new GithubTagRepository(this._github);
+            const githubGetLastTagUseCase = new GithubGetLastTagUseCase(githubRepository);
+            const githubCreateTagUseCase = new GithubCreateTagUseCase(githubRepository);
+            const githubRegisterTagUseCase = new GithubRegisterTagUseCase(githubRepository);
+            const tag = yield githubGetLastTagUseCase.tag();
+            const metadata = (_a = tag === null || tag === void 0 ? void 0 : tag.metadata) !== null && _a !== void 0 ? _a : {
+                name: GITHUB_VERSION_NAME.ALPHA,
+                number: 1,
+                version: { major: 1, minor: 0, patch: 0 },
+            };
+            const newTag = yield githubCreateTagUseCase.createAlpha(metadata);
+            yield githubRegisterTagUseCase.register(newTag);
+        });
+    }
+}
+
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __nccwpck_require__(5438);
+;// CONCATENATED MODULE: ./src/domain/enums/github/github-input.enum.ts
+var GITHUB_INPUT;
+(function (GITHUB_INPUT) {
+    GITHUB_INPUT["TOKEN_ID"] = "token-id";
+    GITHUB_INPUT["FIREBASE_ID"] = "firebase-id";
+})(GITHUB_INPUT || (GITHUB_INPUT = {}));
+
+;// CONCATENATED MODULE: ./src/core/github/github.ts
+
+
+
+class Github {
+    constructor() {
+        this.core = core;
+        this.token = core.getInput(GITHUB_INPUT.TOKEN_ID);
+        this.context = github.context;
+        this.owner = this.context.repo.owner;
+        this.repo = this.context.repo.repo;
+        this.api = github.getOctokit(this.token);
+    }
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
-var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 
 
-
-
-
-
-function main() {
-    return src_awaiter(this, void 0, void 0, function* () {
-        const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
-            const context = github.context;
-            const { owner, repo } = context.repo;
-            const api = github.getOctokit(core.getInput('token-pat'));
-            const githubRepository = new GithubRepository(api);
-            const githubGetLastTag = new GithubGetLastTag(githubRepository);
-            const githubCreateTag = new GithubCreateTag(githubRepository);
-            const tag = yield githubGetLastTag.tag(owner, repo);
-            core.info(`Last tag: ${tag.name}`);
-            if (tag.metadata) {
-                console.log(yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata));
-            }
-            else {
-                throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');
-            }
-        }));
-        if (!error) {
-            return;
-        }
-        core.debug(`Message: ${error.message}\n${error.stack}`);
-        // return core.setFailed(error.message);
-    });
+const src_github = new Github();
+try {
+    new Action(src_github);
 }
-main();
+catch (err) {
+    const error = err;
+    src_github.core.debug(`Message: ${error.message}\n${error.stack}`);
+    src_github.core.setFailed(error.message);
+}
 
 })();
 
