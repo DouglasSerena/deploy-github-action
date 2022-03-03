@@ -6,17 +6,17 @@ export interface IGithubCreateTag {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void>;
+  ): Promise<unknown>;
   createAlpha(
     owner: string,
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void>;
+  ): Promise<unknown>;
   createRelease(
     owner: string,
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void>;
+  ): Promise<unknown>;
 }

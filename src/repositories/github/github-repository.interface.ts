@@ -8,5 +8,5 @@ export interface IGithubRepository {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void>;
+  ): Promise<unknown>;
 }

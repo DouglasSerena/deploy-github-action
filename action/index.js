@@ -8512,7 +8512,7 @@ class GithubRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const { major, minor, patch } = tag.version;
             const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
-            yield this._api
+            return yield this._api
                 .request('POST /repos/{owner}/{repo}/git/tags', {
                 repo: repo,
                 owner: owner,
@@ -8570,7 +8570,7 @@ class GithubCreateTag {
     }
     create(owner, repo, sha, tag) {
         return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
-            yield this._repository.createTag(owner, repo, sha, tag);
+            return yield this._repository.createTag(owner, repo, sha, tag);
         });
     }
     createAlpha(owner, repo, sha, tag) {
@@ -8578,7 +8578,7 @@ class GithubCreateTag {
             this._incrementPatch(tag.version);
             this._incrementNumber(tag);
             tag.name = VERSION_NAME.ALPHA;
-            yield this.create(owner, repo, sha, tag);
+            return yield this.create(owner, repo, sha, tag);
         });
     }
     createRelease(owner, repo, sha, tag) {
@@ -8586,7 +8586,7 @@ class GithubCreateTag {
             this._incrementMinor(tag.version);
             this._incrementNumber(tag);
             tag.name = VERSION_NAME.RELEASE;
-            yield this.create(owner, repo, sha, tag);
+            return yield this.create(owner, repo, sha, tag);
         });
     }
     _incrementNumber(tag) {
@@ -8655,7 +8655,7 @@ function main() {
         const githubCreateTag = new GithubCreateTag(githubRepository);
         const tag = yield githubGetLastTag.tag(owner, repo);
         if (tag.metadata) {
-            yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata);
+            console.log(yield githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata));
         }
         else {
             throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');

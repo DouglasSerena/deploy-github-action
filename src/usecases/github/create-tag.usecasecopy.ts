@@ -12,8 +12,8 @@ export class GithubCreateTag implements IGithubCreateTag {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void> {
-    await this._repository.createTag(owner, repo, sha, tag);
+  ): Promise<unknown> {
+    return await this._repository.createTag(owner, repo, sha, tag);
   }
 
   public async createAlpha(
@@ -21,12 +21,12 @@ export class GithubCreateTag implements IGithubCreateTag {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void> {
+  ): Promise<unknown> {
     this._incrementPatch(tag.version);
     this._incrementNumber(tag);
     tag.name = VERSION_NAME.ALPHA;
 
-    await this.create(owner, repo, sha, tag);
+    return await this.create(owner, repo, sha, tag);
   }
 
   public async createRelease(
@@ -34,12 +34,12 @@ export class GithubCreateTag implements IGithubCreateTag {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void> {
+  ): Promise<unknown> {
     this._incrementMinor(tag.version);
     this._incrementNumber(tag);
     tag.name = VERSION_NAME.RELEASE;
 
-    await this.create(owner, repo, sha, tag);
+    return await this.create(owner, repo, sha, tag);
   }
 
   private _incrementNumber(tag: IMetadataTagModel): IMetadataTagModel {

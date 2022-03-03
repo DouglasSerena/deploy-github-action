@@ -17,11 +17,11 @@ export class GithubRepository {
     repo: string,
     sha: string,
     tag: IMetadataTagModel
-  ): Promise<void> {
+  ): Promise<unknown> {
     const { major, minor, patch } = tag.version;
     const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
 
-    await this._api
+    return await this._api
       .request('POST /repos/{owner}/{repo}/git/tags', {
         repo: repo,
         owner: owner,

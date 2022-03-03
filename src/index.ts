@@ -18,7 +18,9 @@ async function main() {
   const tag = await githubGetLastTag.tag(owner, repo);
 
   if (tag.metadata) {
-    await githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata);
+    console.log(
+      await githubCreateTag.createAlpha(owner, repo, context.sha, tag.metadata)
+    );
   } else {
     throw new Error(
       'Não a como gerar um tag devido a não haver metadados da versão.'

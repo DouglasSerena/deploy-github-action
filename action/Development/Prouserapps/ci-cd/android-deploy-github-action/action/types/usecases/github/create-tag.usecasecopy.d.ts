@@ -4,9 +4,9 @@ import { IGithubCreateTag } from './create-tag-usecase.interface';
 export declare class GithubCreateTag implements IGithubCreateTag {
     private _repository;
     constructor(_repository: IGithubRepository);
-    create(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<void>;
-    createAlpha(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<void>;
-    createRelease(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<void>;
+    create(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<unknown>;
+    createAlpha(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<unknown>;
+    createRelease(owner: string, repo: string, sha: string, tag: IMetadataTagModel): Promise<unknown>;
     private _incrementNumber;
     private _incrementMajor;
     private _incrementMinor;
