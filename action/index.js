@@ -8530,8 +8530,9 @@ function main() {
             const time = new Date().toTimeString();
             core.setOutput('time', time);
             console.log(context.repo);
-            console.log(yield github.getOctokit(token).request('GET /users/{username}/repos', {
-                username: context.repo.owner,
+            console.log(yield github.getOctokit(token).request('GET /repos/{owner}/{repo}/tags', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
             }));
         }));
         if (!error) {

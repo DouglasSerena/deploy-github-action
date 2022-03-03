@@ -12,8 +12,9 @@ async function main() {
 
     console.log(context.repo);
     console.log(
-      await github.getOctokit(token).request('GET /users/{username}/repos', {
-        username: context.repo.owner,
+      await github.getOctokit(token).request('GET /repos/{owner}/{repo}/tags', {
+        owner: context.repo.owner,
+        repo: context.repo.repo,
       })
     );
   });
