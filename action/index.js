@@ -8505,8 +8505,105 @@ class GithubRepository {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._api
                 .request('GET /repos/{owner}/{repo}/tags', { owner, repo })
+                .then(({ data }) => this._prepareTags(data));
+        });
+    }
+    createTag(owner, repo, tag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { major, minor, patch } = tag.version;
+            const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
+            yield this._api
+                .request('POST /repos/{owner}/{repo}/git/tags', {
+                repo: repo,
+                owner: owner,
+                tag: version,
+                message: `New tag ${version}`,
+                object: 'object',
+                type: 'commit',
+            })
                 .then(({ data }) => data);
         });
+    }
+    _prepareTags(tags) {
+        return tags.reduce((tags, tag) => {
+            const match = /(\w+)-([\d\.]+)_(\d+)/g.exec(tag.name);
+            if (!match) {
+                return tags;
+            }
+            const [_, name, version, number] = match;
+            const [major, minor, patch] = version.split('.');
+            tags.push(Object.assign(Object.assign({}, tag), { metadata: {
+                    name: name,
+                    version: {
+                        major: Number(major),
+                        minor: Number(minor),
+                        patch: Number(patch),
+                    },
+                    number: Number(number),
+                } }));
+            return tags;
+        }, []);
+    }
+}
+
+;// CONCATENATED MODULE: ./src/domain/version-name.enum.ts
+var VERSION_NAME;
+(function (VERSION_NAME) {
+    VERSION_NAME["RELEASE"] = "release";
+    VERSION_NAME["ALPHA"] = "alpha";
+})(VERSION_NAME || (VERSION_NAME = {}));
+
+;// CONCATENATED MODULE: ./src/usecases/github/create-tag.usecasecopy.ts
+var create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class GithubCreateTag {
+    constructor(_repository) {
+        this._repository = _repository;
+    }
+    create(owner, repo, tag) {
+        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+            yield this._repository.createTag(owner, repo, tag);
+        });
+    }
+    createAlpha(owner, repo, tag) {
+        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+            this._incrementPatch(tag.version);
+            this._incrementNumber(tag);
+            tag.name = VERSION_NAME.ALPHA;
+            yield this.create(owner, repo, tag);
+        });
+    }
+    createRelease(owner, repo, tag) {
+        return create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+            this._incrementMinor(tag.version);
+            this._incrementNumber(tag);
+            tag.name = VERSION_NAME.RELEASE;
+            yield this.create(owner, repo, tag);
+        });
+    }
+    _incrementNumber(tag) {
+        return Object.assign(tag, { number: tag.number + 1 });
+    }
+    _incrementMajor(version) {
+        return Object.assign(version, {
+            patch: 0,
+            minor: 0,
+            major: version.major + 1,
+        });
+    }
+    _incrementMinor(version) {
+        return Object.assign(version, { patch: 0, minor: version.minor + 1 });
+    }
+    _incrementPatch(version) {
+        return Object.assign(version, { patch: version.patch + 1 });
     }
 }
 
@@ -8569,14 +8666,22 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         const [success, error] = yield onTry(() => src_awaiter(this, void 0, void 0, function* () {
-            const context = github.context;
+            const { owner, repo } = github.context.repo;
             const api = github.getOctokit(core.getInput('token-pat'));
             const githubRepository = new GithubRepository(api);
             const githubGetLastTag = new GithubGetLastTag(githubRepository);
-            console.log(yield githubGetLastTag.tag(context.repo.owner, context.repo.repo));
+            const githubCreateTag = new GithubCreateTag(githubRepository);
+            const tag = yield githubGetLastTag.tag(owner, repo);
+            if (tag.metadata) {
+                yield githubCreateTag.createAlpha(owner, repo, tag.metadata);
+            }
+            else {
+                throw new Error('Não a como gerar um tag devido a não haver metadados da versão.');
+            }
         }));
         if (!error) {
             return;
