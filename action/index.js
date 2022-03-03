@@ -8733,17 +8733,31 @@ class Github {
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
 
-const src_github = new Github();
-try {
-    new Action(src_github);
+function main() {
+    return src_awaiter(this, void 0, void 0, function* () {
+        const github = new Github();
+        try {
+            yield new Action(github).exec();
+        }
+        catch (err) {
+            const error = err;
+            github.core.info(`Message: ${error.message}\n${error.stack}`);
+            github.core.setFailed(error.message);
+        }
+    });
 }
-catch (err) {
-    const error = err;
-    src_github.core.debug(`Message: ${error.message}\n${error.stack}`);
-    src_github.core.setFailed(error.message);
-}
+main();
 
 })();
 
