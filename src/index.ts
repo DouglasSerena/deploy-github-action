@@ -13,7 +13,7 @@ async function main() {
     console.log(`The event payload: ${payload}`);
   });
 
-  if (success || !error) {
+  if (!error) {
     return;
   }
 
