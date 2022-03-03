@@ -8688,7 +8688,8 @@ function main() {
         if (!error) {
             return;
         }
-        return core.setFailed(error.message);
+        core.debug(`Message: ${error.message}\n${error.stack}`);
+        // return core.setFailed(error.message);
     });
 }
 main();

@@ -40,7 +40,7 @@ async function main() {
 
   core.debug(`Message: ${error.message}\n${error.stack}`);
 
-  return core.setFailed(error.message);
+  // return core.setFailed(error.message);
 }
 
 main();
