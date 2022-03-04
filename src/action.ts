@@ -49,11 +49,17 @@ export class Action {
   }
 
   private async _generatorBundle() {
-    if (this._github.input.platform === PLATFORM.ANDROID) {
-      const reactNativeGeneratorBundleAndroidUseCase =
-        new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
+    switch (this._github.input.platform) {
+      case PLATFORM.ANDROID:
+        const reactNativeGeneratorBundleAndroidUseCase =
+          new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
 
-      await reactNativeGeneratorBundleAndroidUseCase.generator();
+        await reactNativeGeneratorBundleAndroidUseCase.generator();
+        break;
+      case PLATFORM.IOS:
+        throw new Error(`Not implemented`);
+      default:
+        throw new Error(`Platform not unknown ${this._github.input.platform}`);
     }
   }
 

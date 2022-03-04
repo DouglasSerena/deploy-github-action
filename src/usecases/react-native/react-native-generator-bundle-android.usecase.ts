@@ -7,8 +7,6 @@ export class ReactNativeGeneratorBundleAndroidUseCase
   constructor(private _exec: IActionExec) {}
 
   public async generator() {
-    await this._prepare();
-
     const success = await this._exec.run('yarn react-native', [
       'bundle',
       '--dev false',
@@ -43,15 +41,6 @@ export class ReactNativeGeneratorBundleAndroidUseCase
     if (!successRaw) {
       throw new Error(
         'An error occurred while trying to remove the "raw" folder.'
-      );
-    }
-  }
-
-  private async _prepare() {
-    const exist = await this._exec.run('npm list react-native');
-    if (!exist) {
-      throw new Error(
-        'Could not find react-native. please check if it is installed.'
       );
     }
   }

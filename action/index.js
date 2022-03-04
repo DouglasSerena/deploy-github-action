@@ -10001,7 +10001,6 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     }
     generator() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            yield this._prepare();
             const success = yield this._exec.run('yarn react-native', [
                 'bundle',
                 '--dev false',
@@ -10029,14 +10028,6 @@ class ReactNativeGeneratorBundleAndroidUseCase {
             });
             if (!successRaw) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
-            }
-        });
-    }
-    _prepare() {
-        return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const exist = yield this._exec.run('npm list react-native');
-            if (!exist) {
-                throw new Error('Could not find react-native. please check if it is installed.');
             }
         });
     }
@@ -10095,9 +10086,15 @@ class Action {
     }
     _generatorBundle() {
         return action_awaiter(this, void 0, void 0, function* () {
-            if (this._github.input.platform === PLATFORM.ANDROID) {
-                const reactNativeGeneratorBundleAndroidUseCase = new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
-                yield reactNativeGeneratorBundleAndroidUseCase.generator();
+            switch (this._github.input.platform) {
+                case PLATFORM.ANDROID:
+                    const reactNativeGeneratorBundleAndroidUseCase = new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
+                    yield reactNativeGeneratorBundleAndroidUseCase.generator();
+                    break;
+                case PLATFORM.IOS:
+                    throw new Error(`Not implemented`);
+                default:
+                    throw new Error(`Platform not unknown ${this._github.input.platform}`);
             }
         });
     }

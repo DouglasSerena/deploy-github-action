@@ -5,5 +5,4 @@ export declare class ReactNativeGeneratorBundleAndroidUseCase implements IReactN
     constructor(_exec: IActionExec);
     generator(): Promise<void>;
     private _clearFolders;
-    private _prepare;
 }
