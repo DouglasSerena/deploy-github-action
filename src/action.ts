@@ -56,7 +56,8 @@ export class Action {
             case PLATFORM.ANDROID:
                 const reactNativeGeneratorBundleAndroidUseCase =
                     new ReactNativeGeneratorBundleAndroidUseCase(
-                        this._github.exec
+                        this._github.exec,
+                        this._github.io
                     );
 
                 await reactNativeGeneratorBundleAndroidUseCase.generator();

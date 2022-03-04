@@ -7,17 +7,21 @@ import { IGithubApi } from "./github-api.interface";
 import { IGithubContext } from "./github-context.interface";
 import { IActionExec } from "../actions/action-exec.interface";
 import { ActionExec } from "../actions/action-exec";
+import { IActionIo } from "../actions/action-io.interface";
+import { ActionIo } from "../actions/action-io";
 
 export class Github implements IGithub {
     public input: IActionInput;
     public context: IGithubContext;
     public api: IGithubApi;
     public exec: IActionExec;
+    public io: IActionIo;
 
     constructor() {
         this.input = new ActionInput();
         this.context = new GithubContext();
         this.api = new GithubApi(this.input);
         this.exec = new ActionExec();
+        this.io = new ActionIo();
     }
 }

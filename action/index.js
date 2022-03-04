@@ -10011,6 +10011,30 @@ class GradlewCreateApkUseCase {
     }
 }
 
+;// CONCATENATED MODULE: ./src/utils/on-try.ts
+var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+function onTry(callback) {
+    return on_try_awaiter(this, void 0, void 0, function* () {
+        try {
+            if (typeof callback === "function") {
+                callback = callback();
+            }
+            return [yield callback, null];
+        }
+        catch (error) {
+            return [null, error];
+        }
+    });
+}
+
 ;// CONCATENATED MODULE: ./src/usecases/react-native/react-native-generator-bundle-android.usecase.ts
 var react_native_generator_bundle_android_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -10021,9 +10045,11 @@ var react_native_generator_bundle_android_usecase_awaiter = (undefined && undefi
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 class ReactNativeGeneratorBundleAndroidUseCase {
-    constructor(_exec) {
+    constructor(_exec, _io) {
         this._exec = _exec;
+        this._io = _io;
     }
     generator() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
@@ -10036,17 +10062,13 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     }
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const successDrawable = yield this._exec.run(`rm -r drawable-*`, {
-                cwd: "android/app/src/main/res",
-            });
-            if (!successDrawable) {
-                throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
-            }
-            const successRaw = yield this._exec.run(`rm -r raw`, {
-                cwd: "android/app/src/main/res",
-            });
-            if (!successRaw) {
+            const [_, resError] = yield onTry(this._io.remove(`android/app/src/main/res/res`));
+            if (resError) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
+            }
+            const [__, drawableError] = yield onTry(this._io.remove(`android/app/src/main/res/drawable-*`));
+            if (drawableError) {
+                throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
         });
     }
@@ -10108,7 +10130,7 @@ class Action {
         return action_awaiter(this, void 0, void 0, function* () {
             switch (this._github.input.platform) {
                 case PLATFORM.ANDROID:
-                    const reactNativeGeneratorBundleAndroidUseCase = new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
+                    const reactNativeGeneratorBundleAndroidUseCase = new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec, this._github.io);
                     yield reactNativeGeneratorBundleAndroidUseCase.generator();
                     break;
                 case PLATFORM.IOS:
@@ -10205,7 +10227,29 @@ class ActionExec {
     }
 }
 
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(7436);
+;// CONCATENATED MODULE: ./src/core/actions/action-io.ts
+var action_io_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class ActionIo {
+    remove(path) {
+        return action_io_awaiter(this, void 0, void 0, function* () {
+            return io.rmRF(path);
+        });
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/core/github/github.ts
+
 
 
 
@@ -10216,6 +10260,7 @@ class Github {
         this.context = new GithubContext();
         this.api = new GithubApi(this.input);
         this.exec = new ActionExec();
+        this.io = new ActionIo();
     }
 }
 
