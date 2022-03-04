@@ -9774,22 +9774,6 @@ var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
-;// CONCATENATED MODULE: ./src/core/actions/action-logger.ts
-
-class ActionLogger {
-    static log(message) {
-        return core.info(message);
-    }
-    static debug(message) {
-        return core.info(message);
-    }
-    static failed(message) {
-        return core.setFailed(message);
-    }
-}
-
 ;// CONCATENATED MODULE: ./src/domain/enums/github/github-version-name.enum.ts
 var GITHUB_VERSION_NAME;
 (function (GITHUB_VERSION_NAME) {
@@ -9878,6 +9862,22 @@ class GithubTagRepository {
     }
 }
 
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+;// CONCATENATED MODULE: ./src/core/actions/action-logger.ts
+
+class ActionLogger {
+    static log(message) {
+        return core.info(message);
+    }
+    static debug(message) {
+        return core.info(message);
+    }
+    static failed(message) {
+        return core.setFailed(message);
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/usecases/github/github-create-tag.usecasecopy.ts
 var github_create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -9889,13 +9889,16 @@ var github_create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) |
     });
 };
 
+
 class GithubCreateTagUseCase {
     constructor(_repository) {
         this._repository = _repository;
     }
     create(tag) {
         return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
-            return yield this._repository.createTag(tag);
+            const newTag = yield this._repository.createTag(tag);
+            ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+            return newTag;
         });
     }
     createAlpha(tag) {
@@ -9974,12 +9977,14 @@ var github_register_tag_usecase_awaiter = (undefined && undefined.__awaiter) || 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 class GithubRegisterTagUseCase {
     constructor(_repository) {
         this._repository = _repository;
     }
     register(newTag) {
         return github_register_tag_usecase_awaiter(this, void 0, void 0, function* () {
+            ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
             return this._repository.registerTag(newTag);
         });
     }
@@ -9995,6 +10000,7 @@ var gradlew_create_apk_usecase_awaiter = (undefined && undefined.__awaiter) || f
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 class GradlewCreateApkUseCase {
     constructor(_exec) {
         this._exec = _exec;
@@ -10007,6 +10013,7 @@ class GradlewCreateApkUseCase {
             if (!success) {
                 throw new Error("An error occurred while trying to generate the apk.");
             }
+            ActionLogger.log(`[INFO] Create apk android`);
         });
     }
 }
@@ -10046,6 +10053,7 @@ var react_native_generator_bundle_android_usecase_awaiter = (undefined && undefi
     });
 };
 
+
 class ReactNativeGeneratorBundleAndroidUseCase {
     constructor(_exec, _io) {
         this._exec = _exec;
@@ -10057,19 +10065,24 @@ class ReactNativeGeneratorBundleAndroidUseCase {
             if (!success) {
                 throw new Error("There was an error trying to generate the android bundle.");
             }
+            ActionLogger.log(`[INFO] Generate bundle apk`);
             yield this._clearFolders();
         });
     }
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const [_, resError] = yield onTry(this._io.remove(`android/app/src/main/res/res`));
+            const pathRes = "android/app/src/main/res";
+            ActionLogger.log(`${yield this._io.findInPath(`${pathRes}/drawable-*`)}`);
+            const [_, resError] = yield onTry(this._io.remove(`${pathRes}/raw`));
             if (resError) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
             }
-            const [__, drawableError] = yield onTry(this._io.remove(`android/app/src/main/res/drawable-*`));
+            ActionLogger.log(`[INFO] Remove folder 'raw'`);
+            const [__, drawableError] = yield onTry(this._io.remove(`${pathRes}/drawable-*`));
             if (drawableError) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
+            ActionLogger.log(`[INFO] Remove folders 'drawable-*'`);
         });
     }
 }
@@ -10092,7 +10105,6 @@ var action_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 
 
 
-
 class Action {
     constructor(_github) {
         this._github = _github;
@@ -10103,7 +10115,7 @@ class Action {
             yield this._createNewTag(githubRepository);
             yield this._generatorBundle();
             yield this._createApk();
-            // await this._publishFirebase();
+            yield this._publishFirebase();
         });
     }
     _createNewTag(githubRepository) {
@@ -10121,9 +10133,7 @@ class Action {
             const newTag = this._github.input.versionName === GITHUB_VERSION_NAME.RELEASE
                 ? yield githubCreateTagUseCase.createRelease(metadata)
                 : yield githubCreateTagUseCase.createAlpha(metadata);
-            ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
             yield githubRegisterTagUseCase.register(newTag);
-            ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
         });
     }
     _generatorBundle() {
@@ -10241,9 +10251,14 @@ var action_io_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 };
 
 class ActionIo {
+    findInPath(tool) {
+        return action_io_awaiter(this, void 0, void 0, function* () {
+            return yield io.findInPath(tool);
+        });
+    }
     remove(path) {
         return action_io_awaiter(this, void 0, void 0, function* () {
-            return io.rmRF(path);
+            return yield io.rmRF(path);
         });
     }
 }

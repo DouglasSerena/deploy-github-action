@@ -4,6 +4,7 @@ import { IVersion } from "../../domain/interfaces/version.interface";
 import { IGithubTagRepository } from "../../repositories/github/github-tag-repository.interface";
 import { IGithubCreateTagUseCase } from "./github-create-tag-usecase.interface";
 import { IGithubCreateTagResponse } from "../../domain/response/github/github-create-tag.response";
+import { ActionLogger } from "../../core/actions/action-logger";
 
 export class GithubCreateTagUseCase implements IGithubCreateTagUseCase {
     constructor(private _repository: IGithubTagRepository) {}
@@ -11,7 +12,10 @@ export class GithubCreateTagUseCase implements IGithubCreateTagUseCase {
     public async create(
         tag: IGithubMetadataTagModel
     ): Promise<IGithubCreateTagResponse> {
-        return await this._repository.createTag(tag);
+        const newTag = await this._repository.createTag(tag);
+        ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+
+        return newTag;
     }
 
     public async createAlpha(

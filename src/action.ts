@@ -1,4 +1,3 @@
-import { ActionLogger } from "./core/actions/action-logger";
 import { IGithub } from "./core/github/github.interface";
 import { GITHUB_VERSION_NAME } from "./domain/enums/github/github-version-name.enum";
 import { PLATFORM } from "./domain/enums/platform.enum";
@@ -19,7 +18,7 @@ export class Action {
         await this._createNewTag(githubRepository);
         await this._generatorBundle();
         await this._createApk();
-        // await this._publishFirebase();
+        await this._publishFirebase();
     }
 
     private async _createNewTag(githubRepository: IGithubTagRepository) {
@@ -45,10 +44,7 @@ export class Action {
                 ? await githubCreateTagUseCase.createRelease(metadata)
                 : await githubCreateTagUseCase.createAlpha(metadata);
 
-        ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
-
         await githubRegisterTagUseCase.register(newTag);
-        ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
     }
 
     private async _generatorBundle() {

@@ -1,4 +1,5 @@
 import { IActionExec } from "../../core/actions/action-exec.interface";
+import { ActionLogger } from "../../core/actions/action-logger";
 import { IGradlewCreateApkUseCase } from "./gradlew-create-apk-usecase.interface";
 
 export class GradlewCreateApkUseCase implements IGradlewCreateApkUseCase {
@@ -14,5 +15,6 @@ export class GradlewCreateApkUseCase implements IGradlewCreateApkUseCase {
                 "An error occurred while trying to generate the apk."
             );
         }
+        ActionLogger.log(`[INFO] Create apk android`);
     }
 }
