@@ -9,12 +9,15 @@ import { IActionExec } from "../actions/action-exec.interface";
 import { ActionExec } from "../actions/action-exec";
 import { IActionIo } from "../actions/action-io.interface";
 import { ActionIo } from "../actions/action-io";
+import { IActionGlob } from "../actions/action-glob.interface";
+import { ActionGlob } from "../actions/action-glob";
 
 export class Github implements IGithub {
     public input: IActionInput;
     public context: IGithubContext;
     public api: IGithubApi;
     public exec: IActionExec;
+    public glob: IActionGlob;
     public io: IActionIo;
 
     constructor() {
@@ -23,5 +26,6 @@ export class Github implements IGithub {
         this.api = new GithubApi(this.input);
         this.exec = new ActionExec();
         this.io = new ActionIo();
+        this.glob = new ActionGlob();
     }
 }

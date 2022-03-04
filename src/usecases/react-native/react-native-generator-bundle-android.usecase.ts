@@ -1,5 +1,6 @@
 import path from "path";
 import { IActionExec } from "../../core/actions/action-exec.interface";
+import { IActionGlob } from "../../core/actions/action-glob.interface";
 import { IActionIo } from "../../core/actions/action-io.interface";
 import { ActionLogger } from "../../core/actions/action-logger";
 import { onTry } from "../../utils/on-try";
@@ -8,7 +9,11 @@ import { IReactNativeGeneratorBundleAndroidUseCase } from "./react-native-genera
 export class ReactNativeGeneratorBundleAndroidUseCase
     implements IReactNativeGeneratorBundleAndroidUseCase
 {
-    constructor(private _exec: IActionExec, private _io: IActionIo) {}
+    constructor(
+        private _exec: IActionExec,
+        private _io: IActionIo,
+        private _glob: IActionGlob
+    ) {}
 
     public async generator() {
         const success = await this._exec.run(
@@ -28,10 +33,16 @@ export class ReactNativeGeneratorBundleAndroidUseCase
     private async _clearFolders() {
         const pathRes = "android/app/src/main/res";
         ActionLogger.log(
-            `[PATH] ${await this._io.findInPath(`${pathRes}/drawable-`)}`
+            `[PATH] ${await this._glob.paths(`${pathRes}/drawable-*`)}`
         );
         ActionLogger.log(
-            `[PATH] ${await this._io.findInPath(`${pathRes}/drawable`)}`
+            `[PATH] ${await this._glob.paths(`${pathRes}/drawable-`)}`
+        );
+        ActionLogger.log(
+            `[PATH] ${await this._glob.paths(`${pathRes}/drawable`)}`
+        );
+        ActionLogger.log(
+            `[PATH] ${await this._glob.paths(`${pathRes}/drawable*`)}`
         );
 
         const [_, resError] = await onTry(this._io.remove(`${pathRes}/raw`));
