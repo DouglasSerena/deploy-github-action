@@ -8730,9 +8730,7 @@ class Action {
             };
             const newTag = yield githubCreateTagUseCase.createAlpha(metadata);
             ActionLogger.log(`[INFO] Create new tag: ${newTag.tag}`);
-            // ActionLogger.log(
-            //   JSON.stringify(await githubRegisterTagUseCase.register(newTag))
-            // );
+            ActionLogger.log(JSON.stringify(yield githubRegisterTagUseCase.register(newTag)));
             ActionLogger.log(`[INFO] Create ref tag: ${newTag.tag}`);
         });
     }
