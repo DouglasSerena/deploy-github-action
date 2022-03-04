@@ -12520,16 +12520,14 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
             const pathRes = "android/app/src/main/res";
-            ActionLogger.log(`[PATH] ${yield this._glob.paths(`${pathRes}/drawable-*`)}`);
-            ActionLogger.log(`[PATH] ${yield this._glob.paths(`${pathRes}/drawable-`)}`);
-            ActionLogger.log(`[PATH] ${yield this._glob.paths(`${pathRes}/drawable`)}`);
-            ActionLogger.log(`[PATH] ${yield this._glob.paths(`${pathRes}/drawable*`)}`);
             const [_, resError] = yield onTry(this._io.remove(`${pathRes}/raw`));
             if (resError) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
             }
             ActionLogger.log(`[INFO] Remove folder 'raw'`);
-            const [__, drawableError] = yield onTry(this._io.remove(`${pathRes}/drawable-*`));
+            const folders = yield this._glob.directories(`${pathRes}/drawable-*`);
+            ActionLogger.log(`[FOLDERS] ${folders}`);
+            const [__, drawableError] = yield onTry(this._io.remove(folders));
             if (drawableError) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
@@ -12690,6 +12688,11 @@ class ActionExec {
 
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(7436);
+;// CONCATENATED MODULE: ./src/utils/coerce-array.ts
+function coerceArray(item) {
+    return Array.isArray(item) ? item : [item];
+}
+
 ;// CONCATENATED MODULE: ./src/core/actions/action-io.ts
 var action_io_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -12701,21 +12704,18 @@ var action_io_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
     });
 };
 
+
 class ActionIo {
     remove(path) {
         return action_io_awaiter(this, void 0, void 0, function* () {
-            return yield io.rmRF(path);
+            const promises = coerceArray(path).map((path) => io.rmRF(path));
+            yield Promise.all(promises);
         });
     }
 }
 
 // EXTERNAL MODULE: ./node_modules/@actions/glob/lib/glob.js
 var glob = __nccwpck_require__(8090);
-;// CONCATENATED MODULE: ./src/utils/coerce-array.ts
-function coerceArray(item) {
-    return Array.isArray(item) ? item : [item];
-}
-
 ;// CONCATENATED MODULE: ./src/core/actions/action-glob.ts
 var action_glob_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -12731,8 +12731,14 @@ var action_glob_awaiter = (undefined && undefined.__awaiter) || function (thisAr
 class ActionGlob {
     paths(patterns, options) {
         return action_glob_awaiter(this, void 0, void 0, function* () {
-            const globber = yield this.globber(patterns, options);
+            const globber = yield this.globber(patterns, {});
             return yield globber.glob();
+        });
+    }
+    directories(patterns, options) {
+        return action_glob_awaiter(this, void 0, void 0, function* () {
+            const paths = yield this.paths(patterns, options);
+            return paths.filter((path) => !/[.]/g.test(path));
         });
     }
     globber(patterns, options) {

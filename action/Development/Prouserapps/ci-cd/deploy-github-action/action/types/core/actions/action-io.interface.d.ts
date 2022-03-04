@@ -1,3 +1,3 @@
 export interface IActionIo {
-    remove(path: string): Promise<void>;
+    remove(path: string | string[]): Promise<void>;
 }

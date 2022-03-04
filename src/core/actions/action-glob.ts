@@ -7,8 +7,17 @@ export class ActionGlob implements IActionGlob {
         patterns: string,
         options?: glob.GlobOptions | undefined
     ) {
-        const globber = await this.globber(patterns, options);
+        const globber = await this.globber(patterns, {});
         return await globber.glob();
+    }
+
+    public async directories(
+        patterns: string,
+        options?: glob.GlobOptions
+    ): Promise<string[]> {
+        const paths = await this.paths(patterns, options);
+
+        return paths.filter((path) => !/[.]/g.test(path));
     }
 
     public async globber(

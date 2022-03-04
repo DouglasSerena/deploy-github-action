@@ -32,18 +32,6 @@ export class ReactNativeGeneratorBundleAndroidUseCase
 
     private async _clearFolders() {
         const pathRes = "android/app/src/main/res";
-        ActionLogger.log(
-            `[PATH] ${await this._glob.paths(`${pathRes}/drawable-*`)}`
-        );
-        ActionLogger.log(
-            `[PATH] ${await this._glob.paths(`${pathRes}/drawable-`)}`
-        );
-        ActionLogger.log(
-            `[PATH] ${await this._glob.paths(`${pathRes}/drawable`)}`
-        );
-        ActionLogger.log(
-            `[PATH] ${await this._glob.paths(`${pathRes}/drawable*`)}`
-        );
 
         const [_, resError] = await onTry(this._io.remove(`${pathRes}/raw`));
         if (resError) {
@@ -53,9 +41,11 @@ export class ReactNativeGeneratorBundleAndroidUseCase
         }
         ActionLogger.log(`[INFO] Remove folder 'raw'`);
 
-        const [__, drawableError] = await onTry(
-            this._io.remove(`${pathRes}/drawable-*`)
-        );
+        const folders = await this._glob.directories(`${pathRes}/drawable-*`);
+
+        ActionLogger.log(`[FOLDERS] ${folders}`);
+
+        const [__, drawableError] = await onTry(this._io.remove(folders));
         if (drawableError) {
             throw new Error(
                 'An error occurred while trying to remove duplicate "drawable-*" folders.'
