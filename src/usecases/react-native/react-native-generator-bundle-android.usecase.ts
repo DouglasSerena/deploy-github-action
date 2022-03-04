@@ -28,7 +28,10 @@ export class ReactNativeGeneratorBundleAndroidUseCase
     private async _clearFolders() {
         const pathRes = "android/app/src/main/res";
         ActionLogger.log(
-            `${await this._io.findInPath(`${pathRes}/drawable-*`)}`
+            `[PATH] ${await this._io.findInPath(`${pathRes}/drawable-*`)}`
+        );
+        ActionLogger.log(
+            `[PATH] ${await this._io.findInPath(`${pathRes}/drawable-`)}`
         );
 
         const [_, resError] = await onTry(this._io.remove(`${pathRes}/raw`));

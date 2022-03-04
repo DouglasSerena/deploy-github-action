@@ -10072,7 +10072,8 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
             const pathRes = "android/app/src/main/res";
-            ActionLogger.log(`${yield this._io.findInPath(`${pathRes}/drawable-*`)}`);
+            ActionLogger.log(`[PATH] ${yield this._io.findInPath(`${pathRes}/drawable-*`)}`);
+            ActionLogger.log(`[PATH] ${yield this._io.findInPath(`${pathRes}/drawable-`)}`);
             const [_, resError] = yield onTry(this._io.remove(`${pathRes}/raw`));
             if (resError) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
