@@ -10003,8 +10003,8 @@ class ReactNativeGeneratorBundleAndroidUseCase {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
             const success = yield this._exec.run('yarn react-native', [
                 'bundle',
-                '--dev false',
                 '--platform android',
+                '--dev false',
                 '--entry-file index.js',
                 '--assets-dest android/app/src/main/res',
                 '--bundle-output android/app/src/main/assets/index.android.bundle',
