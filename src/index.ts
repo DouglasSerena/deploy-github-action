@@ -5,6 +5,8 @@ import { Github } from "./core/github/github";
 async function main() {
     const github = new Github();
 
+    github.exec.run("pwd");
+
     try {
         await new Action(github).exec();
     } catch (err) {

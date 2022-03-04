@@ -5,9 +5,9 @@ export class GradlewCreateApkUseCase implements IGradlewCreateApkUseCase {
     constructor(private _exec: IActionExec) {}
 
     public async create(): Promise<void> {
-        const success = await this._exec.run(
-            "cd /android && ./gradlew assembleRelease"
-        );
+        const success = await this._exec.run("./gradlew assembleRelease", {
+            cwd: "../android",
+        });
 
         if (!success) {
             throw new Error(
