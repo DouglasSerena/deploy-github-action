@@ -7,14 +7,9 @@ export class ReactNativeGeneratorBundleAndroidUseCase
   constructor(private _exec: IActionExec) {}
 
   public async generator() {
-    const success = await this._exec.run('yarn react-native', [
-      'bundle',
-      '--platform android',
-      '--dev false',
-      '--entry-file index.js',
-      '--assets-dest android/app/src/main/res',
-      '--bundle-output android/app/src/main/assets/index.android.bundle',
-    ]);
+    const success = await this._exec.run(
+      'yarn react-native bundle --platform android --dev false --entry-file index.js --assets-dest android/app/src/main/res --bundle-output android/app/src/main/assets/index.android.bundle'
+    );
 
     if (!success) {
       throw new Error(
