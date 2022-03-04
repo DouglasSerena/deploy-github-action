@@ -35,12 +35,15 @@ export class Action {
       version: { major: 1, minor: 0, patch: 0 },
     };
 
-    const newTag = await githubCreateTagUseCase.createAlpha(metadata);
-    ActionLogger.log(`[INFO] Create new tag: ${newTag.tag}`);
-    ActionLogger.log(
-      JSON.stringify(await githubRegisterTagUseCase.register(newTag))
-    );
-    ActionLogger.log(`[INFO] Create ref tag: ${newTag.tag}`);
+    const newTag =
+      this._github.input.versionName === GITHUB_VERSION_NAME.RELEASE
+        ? await githubCreateTagUseCase.createRelease(metadata)
+        : await githubCreateTagUseCase.createAlpha(metadata);
+
+    ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+
+    await githubRegisterTagUseCase.register(newTag);
+    ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
   }
 
   private async _generatorBundle() {}

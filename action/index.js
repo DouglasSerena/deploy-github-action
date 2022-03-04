@@ -8728,10 +8728,12 @@ class Action {
                 number: 1,
                 version: { major: 1, minor: 0, patch: 0 },
             };
-            const newTag = yield githubCreateTagUseCase.createAlpha(metadata);
-            ActionLogger.log(`[INFO] Create new tag: ${newTag.tag}`);
-            ActionLogger.log(JSON.stringify(yield githubRegisterTagUseCase.register(newTag)));
-            ActionLogger.log(`[INFO] Create ref tag: ${newTag.tag}`);
+            const newTag = this._github.input.versionName === GITHUB_VERSION_NAME.RELEASE
+                ? yield githubCreateTagUseCase.createRelease(metadata)
+                : yield githubCreateTagUseCase.createAlpha(metadata);
+            ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+            yield githubRegisterTagUseCase.register(newTag);
+            ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
         });
     }
     _generatorBundle() {
