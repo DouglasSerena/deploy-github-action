@@ -6,20 +6,13 @@ import { IGithubCreateTagResponse } from '../../domain/response/github/github-cr
 import { IGithubTagRepository } from './github-tag-repository.interface';
 
 export class GithubTagRepository implements IGithubTagRepository {
-  public get owner() {
-    return this._github.owner;
-  }
-  public get repo() {
-    return this._github.repo;
-  }
-
   constructor(private _github: IGithub) {}
 
   public async getTags(): Promise<IGithubTagModel[]> {
     return await this._github.api
       .request('GET /repos/{owner}/{repo}/tags', {
-        owner: this.owner,
-        repo: this.repo,
+        owner: this._github.context.owner,
+        repo: this._github.context.repo,
       })
       .then(({ data }) => this._prepareTags(data));
   }
@@ -32,8 +25,8 @@ export class GithubTagRepository implements IGithubTagRepository {
 
     return await this._github.api
       .request('POST /repos/{owner}/{repo}/git/tags', {
-        owner: this.owner,
-        repo: this.repo,
+        owner: this._github.context.owner,
+        repo: this._github.context.repo,
         tag: version,
         message: `New tag ${version}`,
         object: this._github.context.sha,
@@ -45,8 +38,8 @@ export class GithubTagRepository implements IGithubTagRepository {
   public async registerTag(tag: IGithubCreateTagResponse): Promise<any> {
     return await this._github.api
       .request('POST /repos/{owner}/{repo}/git/refs', {
-        owner: this.owner,
-        repo: this.repo,
+        owner: this._github.context.owner,
+        repo: this._github.context.repo,
         ref: `refs/tags/${tag.tag}`,
         sha: tag.sha,
       })

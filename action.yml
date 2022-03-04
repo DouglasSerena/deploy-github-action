@@ -3,6 +3,8 @@ description: 'Greet someone and record the time'
 inputs:
   token:
     required: true
+  version-name:
+    default: alpha
 outputs:
   time: # id of output
     description: 'The time we greeted you'

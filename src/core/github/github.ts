@@ -1,26 +1,19 @@
-import * as core from '@actions/core';
-import * as github from '@actions/github';
-
 import { IGithub } from './github.interface';
-import { Context } from '@actions/github/lib/context';
-import { GithubApiType } from '../../domain/types/github/github-api.type';
-import { GITHUB_INPUT } from '../../domain/enums/github/github-input.enum';
+import { IActionInput } from '../actions/action-input.interface';
+import { ActionInput } from '../actions/action-input';
+import { GithubApi } from './github-api';
+import { GithubContext } from './github-context';
+import { IGithubApi } from './github-api.interface';
+import { IGithubContext } from './github-context.interface';
 
 export class Github implements IGithub {
-  public context: Context;
-  public api: GithubApiType;
-  public token: string;
-  public owner: string;
-  public repo: string;
-  public core: typeof core = core;
+  public input: IActionInput;
+  public context: IGithubContext;
+  public api: IGithubApi;
 
   constructor() {
-    this.token = core.getInput(GITHUB_INPUT.TOKEN);
-    this.context = github.context;
-
-    this.owner = this.context.repo.owner;
-    this.repo = this.context.repo.repo;
-
-    this.api = github.getOctokit(this.token);
+    this.input = new ActionInput();
+    this.context = new GithubContext();
+    this.api = new GithubApi(this.input);
   }
 }

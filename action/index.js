@@ -8483,6 +8483,22 @@ var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
 
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+;// CONCATENATED MODULE: ./src/core/actions/action-logger.ts
+
+class ActionLogger {
+    static log(message) {
+        return core.info(message);
+    }
+    static debug(message) {
+        return core.info(message);
+    }
+    static failed(message) {
+        return core.setFailed(message);
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/domain/enums/github/github-version-name.enum.ts
 var GITHUB_VERSION_NAME;
 (function (GITHUB_VERSION_NAME) {
@@ -8504,18 +8520,12 @@ class GithubTagRepository {
     constructor(_github) {
         this._github = _github;
     }
-    get owner() {
-        return this._github.owner;
-    }
-    get repo() {
-        return this._github.repo;
-    }
     getTags() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._github.api
                 .request('GET /repos/{owner}/{repo}/tags', {
-                owner: this.owner,
-                repo: this.repo,
+                owner: this._github.context.owner,
+                repo: this._github.context.repo,
             })
                 .then(({ data }) => this._prepareTags(data));
         });
@@ -8526,8 +8536,8 @@ class GithubTagRepository {
             const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
             return yield this._github.api
                 .request('POST /repos/{owner}/{repo}/git/tags', {
-                owner: this.owner,
-                repo: this.repo,
+                owner: this._github.context.owner,
+                repo: this._github.context.repo,
                 tag: version,
                 message: `New tag ${version}`,
                 object: this._github.context.sha,
@@ -8540,8 +8550,8 @@ class GithubTagRepository {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._github.api
                 .request('POST /repos/{owner}/{repo}/git/refs', {
-                owner: this.owner,
-                repo: this.repo,
+                owner: this._github.context.owner,
+                repo: this._github.context.repo,
                 ref: `refs/tags/${tag.tag}`,
                 sha: tag.sha,
             })
@@ -8692,14 +8702,23 @@ var action_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 
 
 
+
 class Action {
     constructor(_github) {
         this._github = _github;
     }
     exec() {
-        var _a;
         return action_awaiter(this, void 0, void 0, function* () {
             const githubRepository = new GithubTagRepository(this._github);
+            yield this._createNewTag(githubRepository);
+            yield this._generatorBundle();
+            yield this._createApk();
+            yield this._publishFirebase();
+        });
+    }
+    _createNewTag(githubRepository) {
+        var _a;
+        return action_awaiter(this, void 0, void 0, function* () {
             const githubGetLastTagUseCase = new GithubGetLastTagUseCase(githubRepository);
             const githubCreateTagUseCase = new GithubCreateTagUseCase(githubRepository);
             const githubRegisterTagUseCase = new GithubRegisterTagUseCase(githubRepository);
@@ -8710,21 +8729,62 @@ class Action {
                 version: { major: 1, minor: 0, patch: 0 },
             };
             const newTag = yield githubCreateTagUseCase.createAlpha(metadata);
-            this._github.core.info(JSON.stringify(newTag));
-            this._github.core.info(JSON.stringify(yield githubRegisterTagUseCase.register(newTag)));
+            ActionLogger.log(`[INFO] Create new tag: ${newTag.tag}`);
+            // ActionLogger.log(
+            //   JSON.stringify(await githubRegisterTagUseCase.register(newTag))
+            // );
+            ActionLogger.log(`[INFO] Create ref tag: ${newTag.tag}`);
         });
+    }
+    _generatorBundle() {
+        return action_awaiter(this, void 0, void 0, function* () { });
+    }
+    _createApk() {
+        return action_awaiter(this, void 0, void 0, function* () { });
+    }
+    _publishFirebase() {
+        return action_awaiter(this, void 0, void 0, function* () { });
     }
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __nccwpck_require__(5438);
 ;// CONCATENATED MODULE: ./src/domain/enums/github/github-input.enum.ts
 var GITHUB_INPUT;
 (function (GITHUB_INPUT) {
     GITHUB_INPUT["TOKEN"] = "token";
+    GITHUB_INPUT["VERSION_NAME"] = "version-name";
 })(GITHUB_INPUT || (GITHUB_INPUT = {}));
+
+;// CONCATENATED MODULE: ./src/core/actions/action-input.ts
+
+
+class ActionInput {
+    constructor() {
+        this.token = core.getInput(GITHUB_INPUT.TOKEN);
+        this.versionName = core.getInput(GITHUB_INPUT.VERSION_NAME);
+    }
+}
+
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __nccwpck_require__(5438);
+;// CONCATENATED MODULE: ./src/core/github/github-api.ts
+
+class GithubApi {
+    constructor(_input) {
+        this.api = github.getOctokit(_input.token);
+        this.request = this.api.request;
+    }
+}
+
+;// CONCATENATED MODULE: ./src/core/github/github-context.ts
+
+class GithubContext {
+    constructor() {
+        this.context = github.context;
+        this.owner = this.context.repo.owner;
+        this.repo = this.context.repo.repo;
+        this.sha = this.context.sha;
+    }
+}
 
 ;// CONCATENATED MODULE: ./src/core/github/github.ts
 
@@ -8732,12 +8792,9 @@ var GITHUB_INPUT;
 
 class Github {
     constructor() {
-        this.core = core;
-        this.token = core.getInput(GITHUB_INPUT.TOKEN);
-        this.context = github.context;
-        this.owner = this.context.repo.owner;
-        this.repo = this.context.repo.repo;
-        this.api = github.getOctokit(this.token);
+        this.input = new ActionInput();
+        this.context = new GithubContext();
+        this.api = new GithubApi(this.input);
     }
 }
 
@@ -8753,6 +8810,7 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 };
 
 
+
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         const github = new Github();
@@ -8761,8 +8819,7 @@ function main() {
         }
         catch (err) {
             const error = err;
-            github.core.info(`Message: ${error.message}\n${error.stack}`);
-            github.core.setFailed(error.message);
+            ActionLogger.failed(error.message);
         }
     });
 }

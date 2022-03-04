@@ -1,4 +1,5 @@
 import { Action } from './action';
+import { ActionLogger } from './core/actions/action-logger';
 import { Github } from './core/github/github';
 
 async function main() {
@@ -9,8 +10,7 @@ async function main() {
   } catch (err) {
     const error = err as Error;
 
-    github.core.info(`Message: ${error.message}\n${error.stack}`);
-    github.core.setFailed(error.message);
+    ActionLogger.failed(error.message);
   }
 }
 
