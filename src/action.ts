@@ -1,11 +1,13 @@
 import { ActionLogger } from './core/actions/action-logger';
 import { IGithub } from './core/github/github.interface';
 import { GITHUB_VERSION_NAME } from './domain/enums/github/github-version-name.enum';
+import { PLATFORM } from './domain/enums/platform.enum';
 import { IGithubTagRepository } from './repositories/github/github-tag-repository.interface';
 import { GithubTagRepository } from './repositories/github/github-tag.repository';
 import { GithubCreateTagUseCase } from './usecases/github/github-create-tag.usecasecopy';
 import { GithubGetLastTagUseCase } from './usecases/github/github-get-last-tag.usecase';
 import { GithubRegisterTagUseCase } from './usecases/github/github-register-tag.usecase';
+import { ReactNativeGeneratorBundleAndroidUseCase } from './usecases/react-native/react-native-generator-bundle-android.usecase';
 
 export class Action {
   constructor(private _github: IGithub) {}
@@ -15,8 +17,8 @@ export class Action {
 
     await this._createNewTag(githubRepository);
     await this._generatorBundle();
-    await this._createApk();
-    await this._publishFirebase();
+    // await this._createApk();
+    // await this._publishFirebase();
   }
 
   private async _createNewTag(githubRepository: IGithubTagRepository) {
@@ -46,7 +48,14 @@ export class Action {
     ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
   }
 
-  private async _generatorBundle() {}
+  private async _generatorBundle() {
+    if (this._github.input.platform === PLATFORM.ANDROID) {
+      const reactNativeGeneratorBundleAndroidUseCase =
+        new ReactNativeGeneratorBundleAndroidUseCase(this._github.exec);
+
+      await reactNativeGeneratorBundleAndroidUseCase.generator();
+    }
+  }
 
   private async _createApk() {}
 

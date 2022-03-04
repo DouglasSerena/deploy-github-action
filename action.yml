@@ -3,6 +3,8 @@ description: 'Greet someone and record the time'
 inputs:
   token:
     required: true
+  platform:
+    default: android
   version-name:
     default: alpha
 outputs:
