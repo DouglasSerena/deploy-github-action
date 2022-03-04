@@ -1,17 +1,17 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: "Hello World"
+description: "Greet someone and record the time"
 inputs:
-  token:
-    required: true
-  platform:
-    default: android
-  yarn:
-    default: true
-  version-name:
-    default: alpha
+    token:
+        required: true
+    platform:
+        default: android
+    yarn:
+        default: true
+    version-name:
+        default: alpha
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+    time: # id of output
+        description: "The time we greeted you"
 runs:
-  using: 'node16'
-  main: 'action/index.js'
+    using: "node16"
+    main: "action/index.js"

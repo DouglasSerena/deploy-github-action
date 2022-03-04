@@ -1,46 +1,51 @@
-import path from 'path';
-import { IActionExec } from '../../core/actions/action-exec.interface';
-import { IReactNativeGeneratorBundleAndroidUseCase } from './react-native-generator-bundle-android-usecase.interface';
+import path from "path";
+import { IActionExec } from "../../core/actions/action-exec.interface";
+import { IReactNativeGeneratorBundleAndroidUseCase } from "./react-native-generator-bundle-android-usecase.interface";
 
 export class ReactNativeGeneratorBundleAndroidUseCase
-  implements IReactNativeGeneratorBundleAndroidUseCase
+    implements IReactNativeGeneratorBundleAndroidUseCase
 {
-  constructor(private _exec: IActionExec) {}
+    constructor(private _exec: IActionExec) {}
 
-  public async generator() {
-    const success = await this._exec.run(
-      'yarn react-native bundle --platform android --dev false --entry-file index.js --assets-dest android/app/src/main/res --bundle-output android/app/src/main/assets/index.android.bundle'
-    );
+    public async generator() {
+        const success = await this._exec.run(
+            "yarn react-native bundle --platform android --dev false --entry-file index.js --assets-dest android/app/src/main/res --bundle-output android/app/src/main/assets/index.android.bundle"
+        );
 
-    if (!success) {
-      throw new Error(
-        'There was an error trying to generate the android bundle.'
-      );
+        if (!success) {
+            throw new Error(
+                "There was an error trying to generate the android bundle."
+            );
+        }
+
+        // await this._clearFolders();
     }
 
-    await this._clearFolders();
-  }
+    private async _clearFolders() {
+        const resourceFolder = path.join(
+            "android",
+            "app",
+            "src",
+            "main",
+            "res"
+        );
 
-  private async _clearFolders() {
-    const mainFolder = path.join(__dirname, 'android', 'app', 'src', 'main');
-    const resourceFolder = path.join(mainFolder, 'res');
+        const successDrawable = await this._exec.run(
+            `rm -r ${resourceFolder}/drawable-*`
+        );
+        if (!successDrawable) {
+            throw new Error(
+                'An error occurred while trying to remove duplicate "drawable-*" folders.'
+            );
+        }
 
-    const successDrawable = await this._exec.run(
-      `rm -r ${resourceFolder}/drawable-*`
-    );
-    if (!successDrawable) {
-      throw new Error(
-        'An error occurred while trying to remove duplicate "drawable-*" folders.'
-      );
+        const successRaw = await this._exec.run(
+            `rm -r ${resourceFolder}/drawable-*`
+        );
+        if (!successRaw) {
+            throw new Error(
+                'An error occurred while trying to remove the "raw" folder.'
+            );
+        }
     }
-
-    const successRaw = await this._exec.run(
-      `rm -r ${resourceFolder}/drawable-*`
-    );
-    if (!successRaw) {
-      throw new Error(
-        'An error occurred while trying to remove the "raw" folder.'
-      );
-    }
-  }
 }

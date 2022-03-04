@@ -9850,7 +9850,7 @@ class GithubTagRepository {
     getTags() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._github.api
-                .request('GET /repos/{owner}/{repo}/tags', {
+                .request("GET /repos/{owner}/{repo}/tags", {
                 owner: this._github.context.owner,
                 repo: this._github.context.repo,
             })
@@ -9862,13 +9862,13 @@ class GithubTagRepository {
             const { major, minor, patch } = tag.version;
             const version = `${tag.name}-${major}.${minor}.${patch}_${tag.number}`;
             return yield this._github.api
-                .request('POST /repos/{owner}/{repo}/git/tags', {
+                .request("POST /repos/{owner}/{repo}/git/tags", {
                 owner: this._github.context.owner,
                 repo: this._github.context.repo,
                 tag: version,
                 message: `New tag ${version}`,
                 object: this._github.context.sha,
-                type: 'commit',
+                type: "commit",
             })
                 .then(({ data }) => data);
         });
@@ -9876,7 +9876,7 @@ class GithubTagRepository {
     registerTag(tag) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._github.api
-                .request('POST /repos/{owner}/{repo}/git/refs', {
+                .request("POST /repos/{owner}/{repo}/git/refs", {
                 owner: this._github.context.owner,
                 repo: this._github.context.repo,
                 ref: `refs/tags/${tag.tag}`,
@@ -9892,7 +9892,7 @@ class GithubTagRepository {
                 return tags;
             }
             const [_, name, version, number] = match;
-            const [major, minor, patch] = version.split('.');
+            const [major, minor, patch] = version.split(".");
             tags.push(Object.assign(Object.assign({}, tag), { metadata: {
                     name: name,
                     version: {
@@ -10014,6 +10014,30 @@ class GithubRegisterTagUseCase {
     }
 }
 
+;// CONCATENATED MODULE: ./src/usecases/gradlew/gradlew-create-apk.usecase.ts
+var gradlew_create_apk_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class GradlewCreateApkUseCase {
+    constructor(_exec) {
+        this._exec = _exec;
+    }
+    create() {
+        return gradlew_create_apk_usecase_awaiter(this, void 0, void 0, function* () {
+            const success = yield this._exec.run("cd /android && ./gradlew assembleRelease");
+            if (!success) {
+                throw new Error("An error occurred while trying to generate the apk.");
+            }
+        });
+    }
+}
+
 // EXTERNAL MODULE: external "path"
 var external_path_ = __nccwpck_require__(1017);
 var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
@@ -10034,17 +10058,16 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     }
     generator() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const success = yield this._exec.run('yarn react-native bundle --platform android --dev false --entry-file index.js --assets-dest android/app/src/main/res --bundle-output android/app/src/main/assets/index.android.bundle');
+            const success = yield this._exec.run("yarn react-native bundle --platform android --dev false --entry-file index.js --assets-dest android/app/src/main/res --bundle-output android/app/src/main/assets/index.android.bundle");
             if (!success) {
-                throw new Error('There was an error trying to generate the android bundle.');
+                throw new Error("There was an error trying to generate the android bundle.");
             }
-            yield this._clearFolders();
+            // await this._clearFolders();
         });
     }
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const mainFolder = external_path_default().join(__dirname, 'android', 'app', 'src', 'main');
-            const resourceFolder = external_path_default().join(mainFolder, 'res');
+            const resourceFolder = external_path_default().join("android", "app", "src", "main", "res");
             const successDrawable = yield this._exec.run(`rm -r ${resourceFolder}/drawable-*`);
             if (!successDrawable) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
@@ -10075,6 +10098,7 @@ var action_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 
 
 
+
 class Action {
     constructor(_github) {
         this._github = _github;
@@ -10084,7 +10108,7 @@ class Action {
             const githubRepository = new GithubTagRepository(this._github);
             yield this._createNewTag(githubRepository);
             yield this._generatorBundle();
-            // await this._createApk();
+            yield this._createApk();
             // await this._publishFirebase();
         });
     }
@@ -10123,7 +10147,10 @@ class Action {
         });
     }
     _createApk() {
-        return action_awaiter(this, void 0, void 0, function* () { });
+        return action_awaiter(this, void 0, void 0, function* () {
+            const gradlewCreateApkUseCase = new GradlewCreateApkUseCase(this._github.exec);
+            yield gradlewCreateApkUseCase.create();
+        });
     }
     _publishFirebase() {
         return action_awaiter(this, void 0, void 0, function* () { });

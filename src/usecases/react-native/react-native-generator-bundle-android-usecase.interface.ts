@@ -1,3 +1,3 @@
 export interface IReactNativeGeneratorBundleAndroidUseCase {
-  generator(): Promise<void>;
+    generator(): Promise<void>;
 }

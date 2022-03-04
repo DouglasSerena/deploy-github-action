@@ -1,5 +1,5 @@
 export interface IGithubObjectModel {
-  type: string;
-  sha: string;
-  url: string;
+    type: string;
+    sha: string;
+    url: string;
 }

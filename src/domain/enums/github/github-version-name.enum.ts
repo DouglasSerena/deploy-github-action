@@ -1,4 +1,4 @@
 export enum GITHUB_VERSION_NAME {
-  RELEASE = 'release',
-  ALPHA = 'alpha',
+    RELEASE = "release",
+    ALPHA = "alpha",
 }

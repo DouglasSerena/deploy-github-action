@@ -1,4 +1,4 @@
 export enum PLATFORM {
-  ANDROID = 'android',
-  IOS = 'ios',
+    ANDROID = "android",
+    IOS = "ios",
 }

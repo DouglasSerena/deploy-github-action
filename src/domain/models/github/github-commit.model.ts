@@ -1,4 +1,4 @@
 export interface IGithubCommitModel {
-  sha: string;
-  url: string;
+    sha: string;
+    url: string;
 }

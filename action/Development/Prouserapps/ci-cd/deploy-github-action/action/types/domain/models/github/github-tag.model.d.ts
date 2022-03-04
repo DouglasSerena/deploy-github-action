@@ -1,5 +1,5 @@
-import { IGithubCommitModel } from './github-commit.model';
-import { IGithubMetadataTagModel } from './github-metadata-tag.model';
+import { IGithubCommitModel } from "./github-commit.model";
+import { IGithubMetadataTagModel } from "./github-metadata-tag.model";
 export interface IGithubTagModel {
     name: string;
     commit: IGithubCommitModel;
