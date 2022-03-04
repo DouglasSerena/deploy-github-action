@@ -10043,15 +10043,13 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     }
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
-            const successDrawable = yield this._exec.run('rm -r drawable-*', {
-                cwd: external_path_default().join(__dirname, 'android', 'app', 'src', 'main', 'res'),
-            });
+            const mainFolder = external_path_default().join(__dirname, 'android', 'app', 'src', 'main');
+            const resourceFolder = external_path_default().join(mainFolder, 'res');
+            const successDrawable = yield this._exec.run(`rm -r ${resourceFolder}/drawable-*`);
             if (!successDrawable) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
-            const successRaw = yield this._exec.run('rm -r drawable-*', {
-                cwd: external_path_default().join(__dirname, 'android', 'app', 'src', 'main', 'res'),
-            });
+            const successRaw = yield this._exec.run(`rm -r ${resourceFolder}/drawable-*`);
             if (!successRaw) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
             }

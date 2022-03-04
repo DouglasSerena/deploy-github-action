@@ -22,18 +22,21 @@ export class ReactNativeGeneratorBundleAndroidUseCase
   }
 
   private async _clearFolders() {
-    const successDrawable = await this._exec.run('rm -r drawable-*', {
-      cwd: path.join(__dirname, 'android', 'app', 'src', 'main', 'res'),
-    });
+    const mainFolder = path.join(__dirname, 'android', 'app', 'src', 'main');
+    const resourceFolder = path.join(mainFolder, 'res');
+
+    const successDrawable = await this._exec.run(
+      `rm -r ${resourceFolder}/drawable-*`
+    );
     if (!successDrawable) {
       throw new Error(
         'An error occurred while trying to remove duplicate "drawable-*" folders.'
       );
     }
 
-    const successRaw = await this._exec.run('rm -r drawable-*', {
-      cwd: path.join(__dirname, 'android', 'app', 'src', 'main', 'res'),
-    });
+    const successRaw = await this._exec.run(
+      `rm -r ${resourceFolder}/drawable-*`
+    );
     if (!successRaw) {
       throw new Error(
         'An error occurred while trying to remove the "raw" folder.'
