@@ -10031,7 +10031,7 @@ class GradlewCreateApkUseCase {
     create() {
         return gradlew_create_apk_usecase_awaiter(this, void 0, void 0, function* () {
             const success = yield this._exec.run("./gradlew assembleRelease", {
-                cwd: "../android",
+                cwd: "android",
             });
             if (!success) {
                 throw new Error("An error occurred while trying to generate the apk.");
@@ -10262,7 +10262,8 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         const github = new Github();
-        github.exec.run("pwd");
+        github.exec.run("pwd", { cwd: 'android' });
+        return;
         try {
             yield new Action(github).exec();
         }
