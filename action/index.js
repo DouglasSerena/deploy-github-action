@@ -9751,6 +9751,35 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -9985,6 +10014,9 @@ class GithubRegisterTagUseCase {
     }
 }
 
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(1017);
+var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
 ;// CONCATENATED MODULE: ./src/usecases/react-native/react-native-generator-bundle-android.usecase.ts
 var react_native_generator_bundle_android_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -9995,6 +10027,7 @@ var react_native_generator_bundle_android_usecase_awaiter = (undefined && undefi
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 class ReactNativeGeneratorBundleAndroidUseCase {
     constructor(_exec) {
         this._exec = _exec;
@@ -10011,13 +10044,13 @@ class ReactNativeGeneratorBundleAndroidUseCase {
     _clearFolders() {
         return react_native_generator_bundle_android_usecase_awaiter(this, void 0, void 0, function* () {
             const successDrawable = yield this._exec.run('rm -r drawable-*', {
-                cwd: './android/app/src/main/res',
+                cwd: external_path_default().join(__dirname, 'android', 'app', 'src', 'main', 'res'),
             });
             if (!successDrawable) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
             const successRaw = yield this._exec.run('rm -r drawable-*', {
-                cwd: './android/app/src/main/res',
+                cwd: external_path_default().join(__dirname, 'android', 'app', 'src', 'main', 'res'),
             });
             if (!successRaw) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');

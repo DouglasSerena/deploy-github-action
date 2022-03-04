@@ -1,3 +1,4 @@
+import path from 'path';
 import { IActionExec } from '../../core/actions/action-exec.interface';
 import { IReactNativeGeneratorBundleAndroidUseCase } from './react-native-generator-bundle-android-usecase.interface';
 
@@ -22,7 +23,7 @@ export class ReactNativeGeneratorBundleAndroidUseCase
 
   private async _clearFolders() {
     const successDrawable = await this._exec.run('rm -r drawable-*', {
-      cwd: './android/app/src/main/res',
+      cwd: path.join(__dirname, 'android', 'app', 'src', 'main', 'res'),
     });
     if (!successDrawable) {
       throw new Error(
@@ -31,7 +32,7 @@ export class ReactNativeGeneratorBundleAndroidUseCase
     }
 
     const successRaw = await this._exec.run('rm -r drawable-*', {
-      cwd: './android/app/src/main/res',
+      cwd: path.join(__dirname, 'android', 'app', 'src', 'main', 'res'),
     });
     if (!successRaw) {
       throw new Error(

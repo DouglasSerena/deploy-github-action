@@ -1,24 +1,24 @@
-on:
-  push:
-    branches: main
-    tags-ignore:
-      - alpha-*
-      - release-*
+# on:
+#   push:
+#     branches: main
+#     tags-ignore:
+#       - alpha-*
+#       - release-*
 
-jobs:
-  android_deploy:
-    runs-on: ubuntu-latest
-    name: A job to say hello
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          repository: DouglasSerena/deploy-github-action
-          token: ${{ secrets.TOKEN_PAT }}
+# jobs:
+#   android_deploy:
+#     runs-on: ubuntu-latest
+#     name: A job to say hello
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           repository: DouglasSerena/deploy-github-action
+#           token: ${{ secrets.TOKEN_PAT }}
 
-      - name: Hello world action step
-        id: hello
-        uses: ./
-        with:
-          token: ${{ secrets.TOKEN_PAT }}
-          version-name: release
+#       - name: Hello world action step
+#         id: hello
+#         uses: ./
+#         with:
+#           token: ${{ secrets.TOKEN_PAT }}
+#           version-name: release
