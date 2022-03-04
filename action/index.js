@@ -10213,14 +10213,17 @@ var action_exec_awaiter = (undefined && undefined.__awaiter) || function (thisAr
     });
 };
 
+
 class ActionExec {
     run(commandLine, ...args) {
         return action_exec_awaiter(this, void 0, void 0, function* () {
             try {
                 if (Array.isArray(args[0])) {
+                    ActionLogger.log(`[EXEC]: ${commandLine} ${args[0].join(" ")}`);
                     yield exec.exec(commandLine, args[0], args[1]);
                 }
                 else {
+                    ActionLogger.log(`[EXEC]: ${commandLine}`);
                     yield exec.exec(commandLine, undefined, args[0]);
                 }
                 return true;
@@ -10262,8 +10265,6 @@ var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 function main() {
     return src_awaiter(this, void 0, void 0, function* () {
         const github = new Github();
-        github.exec.run("pwd", { cwd: 'android' });
-        return;
         try {
             yield new Action(github).exec();
         }
