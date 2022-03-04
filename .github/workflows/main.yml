@@ -1,7 +1,8 @@
 on:
   push:
-    tags-ignores:
-      - '*'
+    tags-ignore:
+      - alpha-*
+      - release-*
 
 jobs:
   android_deploy:
