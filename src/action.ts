@@ -7,6 +7,7 @@ import { GithubCreateTagUseCase } from "./usecases/github/github-create-tag.usec
 import { GithubGetLastTagUseCase } from "./usecases/github/github-get-last-tag.usecase";
 import { GithubRegisterTagUseCase } from "./usecases/github/github-register-tag.usecase";
 import { GradlewCreateApkUseCase } from "./usecases/gradlew/gradlew-create-apk.usecase";
+import { GradlewDecodeKeystore } from "./usecases/gradlew/gradlew-decode-keystore.usecase";
 import { ReactNativeGeneratorBundleAndroidUseCase } from "./usecases/react-native/react-native-generator-bundle-android.usecase";
 
 export class Action {
@@ -17,6 +18,7 @@ export class Action {
 
         await this._createNewTag(githubRepository);
         await this._generatorBundle();
+        await this._decodeKeystores();
         await this._createApk();
         await this._publishFirebase();
     }
@@ -66,6 +68,15 @@ export class Action {
                     `Platform not unknown ${this._github.input.platform}`
                 );
         }
+    }
+
+    private async _decodeKeystores() {
+        const gradlewDecodeKeystore = new GradlewDecodeKeystore(
+            this._github.input,
+            this._github.io
+        );
+
+        await gradlewDecodeKeystore.decode();
     }
 
     private async _createApk() {

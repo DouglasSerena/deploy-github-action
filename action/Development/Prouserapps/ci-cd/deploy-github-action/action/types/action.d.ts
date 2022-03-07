@@ -5,6 +5,7 @@ export declare class Action {
     exec(): Promise<void>;
     private _createNewTag;
     private _generatorBundle;
+    private _decodeKeystores;
     private _createApk;
     private _publishFirebase;
 }

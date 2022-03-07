@@ -43,8 +43,6 @@ export class ReactNativeGeneratorBundleAndroidUseCase
 
         const folders = await this._glob.directories(`${pathRes}/drawable-*`);
 
-        ActionLogger.log(`[FOLDERS] ${folders}`);
-
         const [__, drawableError] = await onTry(this._io.remove(folders));
         if (drawableError) {
             throw new Error(

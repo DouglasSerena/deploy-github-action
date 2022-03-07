@@ -12198,6 +12198,35 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -12465,6 +12494,36 @@ class GradlewCreateApkUseCase {
     }
 }
 
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(1017);
+var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
+;// CONCATENATED MODULE: ./src/usecases/gradlew/gradlew-decode-keystore.usecase.ts
+var gradlew_decode_keystore_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class GradlewDecodeKeystore {
+    constructor(_input, _io) {
+        this._input = _input;
+        this._io = _io;
+    }
+    decode() {
+        return gradlew_decode_keystore_usecase_awaiter(this, void 0, void 0, function* () {
+            const keystorePath = this._input.keystorePath;
+            const keystoreBase64 = this._input.keystoreBase64;
+            const keystoreFilename = this._input.keystoreFilename;
+            const dest = external_path_default().join(keystorePath, keystoreFilename);
+            yield this._io.writeFile(dest, Buffer.from(keystoreBase64, "base64"));
+        });
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/utils/on-try.ts
 var on_try_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -12526,7 +12585,6 @@ class ReactNativeGeneratorBundleAndroidUseCase {
             }
             ActionLogger.log(`[INFO] Remove folder 'raw'`);
             const folders = yield this._glob.directories(`${pathRes}/drawable-*`);
-            ActionLogger.log(`[FOLDERS] ${folders}`);
             const [__, drawableError] = yield onTry(this._io.remove(folders));
             if (drawableError) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
@@ -12554,6 +12612,7 @@ var action_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _a
 
 
 
+
 class Action {
     constructor(_github) {
         this._github = _github;
@@ -12563,6 +12622,7 @@ class Action {
             const githubRepository = new GithubTagRepository(this._github);
             yield this._createNewTag(githubRepository);
             yield this._generatorBundle();
+            yield this._decodeKeystores();
             yield this._createApk();
             yield this._publishFirebase();
         });
@@ -12599,6 +12659,12 @@ class Action {
             }
         });
     }
+    _decodeKeystores() {
+        return action_awaiter(this, void 0, void 0, function* () {
+            const gradlewDecodeKeystore = new GradlewDecodeKeystore(this._github.input, this._github.io);
+            yield gradlewDecodeKeystore.decode();
+        });
+    }
     _createApk() {
         return action_awaiter(this, void 0, void 0, function* () {
             const gradlewCreateApkUseCase = new GradlewCreateApkUseCase(this._github.exec);
@@ -12614,8 +12680,11 @@ class Action {
 var GITHUB_INPUT;
 (function (GITHUB_INPUT) {
     GITHUB_INPUT["TOKEN"] = "token";
-    GITHUB_INPUT["VERSION_NAME"] = "version-name";
     GITHUB_INPUT["PLATFORM"] = "platform";
+    GITHUB_INPUT["VERSION_NAME"] = "version-name";
+    GITHUB_INPUT["KEYSTORE_PATH"] = "keystore-path";
+    GITHUB_INPUT["KEYSTORE_BASE64"] = "keystore-base64";
+    GITHUB_INPUT["KEYSTORE_FILENAME"] = "keystore-filename";
 })(GITHUB_INPUT || (GITHUB_INPUT = {}));
 
 ;// CONCATENATED MODULE: ./src/core/actions/action-input.ts
@@ -12625,6 +12694,9 @@ class ActionInput {
     constructor() {
         this.token = core.getInput(GITHUB_INPUT.TOKEN);
         this.platform = core.getInput(GITHUB_INPUT.PLATFORM);
+        this.keystorePath = core.getInput(GITHUB_INPUT.KEYSTORE_PATH);
+        this.keystoreBase64 = core.getInput(GITHUB_INPUT.KEYSTORE_BASE64);
+        this.keystoreFilename = core.getInput(GITHUB_INPUT.KEYSTORE_FILENAME);
         this.versionName = core.getInput(GITHUB_INPUT.VERSION_NAME);
     }
 }
@@ -12686,6 +12758,8 @@ class ActionExec {
     }
 }
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(7147);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(7436);
 ;// CONCATENATED MODULE: ./src/utils/coerce-array.ts
@@ -12705,7 +12779,13 @@ var action_io_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 };
 
 
+
 class ActionIo {
+    writeFile(file, data, options) {
+        return action_io_awaiter(this, void 0, void 0, function* () {
+            external_fs_.writeFileSync(file, data, options);
+        });
+    }
     remove(path) {
         return action_io_awaiter(this, void 0, void 0, function* () {
             const promises = coerceArray(path).map((path) => io.rmRF(path));

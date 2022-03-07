@@ -3,10 +3,14 @@ description: "Greet someone and record the time"
 inputs:
     token:
         required: true
+    keystore-base64:
+        required: true
+    keystore-filename:
+        required: true
+    keystore-path:
+        default: ./android
     platform:
         default: android
-    yarn:
-        default: true
     version-name:
         default: alpha
 outputs:
