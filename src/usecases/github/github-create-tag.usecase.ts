@@ -13,7 +13,7 @@ export class GithubCreateTagUseCase implements IGithubCreateTagUseCase {
         tag: IGithubMetadataTagModel
     ): Promise<IGithubCreateTagResponse> {
         const newTag = await this._repository.createTag(tag);
-        ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+        ActionLogger.log(`[GIT] Create new tag: "${newTag.tag}"`);
 
         return newTag;
     }

@@ -3,7 +3,7 @@ import { GITHUB_VERSION_NAME } from "./domain/enums/github/github-version-name.e
 import { PLATFORM } from "./domain/enums/platform.enum";
 import { IGithubTagRepository } from "./repositories/github/github-tag-repository.interface";
 import { GithubTagRepository } from "./repositories/github/github-tag.repository";
-import { GithubCreateTagUseCase } from "./usecases/github/github-create-tag.usecasecopy";
+import { GithubCreateTagUseCase } from "./usecases/github/github-create-tag.usecase";
 import { GithubGetLastTagUseCase } from "./usecases/github/github-get-last-tag.usecase";
 import { GithubRegisterTagUseCase } from "./usecases/github/github-register-tag.usecase";
 import { GradlewCreateApkUseCase } from "./usecases/gradlew/gradlew-create-apk.usecase";

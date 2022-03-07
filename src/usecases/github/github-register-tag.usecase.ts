@@ -10,7 +10,9 @@ export class GithubRegisterTagUseCase implements IGithubRegisterTagUseCase {
     public async register(
         newTag: IGithubCreateTagResponse
     ): Promise<IGithubCreateRefResponse> {
-        ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
-        return this._repository.registerTag(newTag);
+        const ref = await this._repository.registerTag(newTag);
+        ActionLogger.log(`[GIT] Create ref: "${newTag.tag}"`);
+
+        return ref;
     }
 }

@@ -12354,8 +12354,8 @@ class ActionLogger {
     }
 }
 
-;// CONCATENATED MODULE: ./src/usecases/github/github-create-tag.usecasecopy.ts
-var github_create_tag_usecasecopy_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/usecases/github/github-create-tag.usecase.ts
+var github_create_tag_usecase_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -12371,14 +12371,14 @@ class GithubCreateTagUseCase {
         this._repository = _repository;
     }
     create(tag) {
-        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+        return github_create_tag_usecase_awaiter(this, void 0, void 0, function* () {
             const newTag = yield this._repository.createTag(tag);
-            ActionLogger.log(`[INFO] Create new tag: "${newTag.tag}"`);
+            ActionLogger.log(`[GIT] Create new tag: "${newTag.tag}"`);
             return newTag;
         });
     }
     createAlpha(tag) {
-        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+        return github_create_tag_usecase_awaiter(this, void 0, void 0, function* () {
             this._incrementPatch(tag.version);
             this._incrementNumber(tag);
             tag.name = GITHUB_VERSION_NAME.ALPHA;
@@ -12386,7 +12386,7 @@ class GithubCreateTagUseCase {
         });
     }
     createRelease(tag) {
-        return github_create_tag_usecasecopy_awaiter(this, void 0, void 0, function* () {
+        return github_create_tag_usecase_awaiter(this, void 0, void 0, function* () {
             this._incrementMinor(tag.version);
             this._incrementNumber(tag);
             tag.name = GITHUB_VERSION_NAME.RELEASE;
@@ -12460,8 +12460,9 @@ class GithubRegisterTagUseCase {
     }
     register(newTag) {
         return github_register_tag_usecase_awaiter(this, void 0, void 0, function* () {
-            ActionLogger.log(`[INFO] Create ref: "${newTag.tag}"`);
-            return this._repository.registerTag(newTag);
+            const ref = yield this._repository.registerTag(newTag);
+            ActionLogger.log(`[GIT] Create ref: "${newTag.tag}"`);
+            return ref;
         });
     }
 }
@@ -12489,7 +12490,7 @@ class GradlewCreateApkUseCase {
             if (!success) {
                 throw new Error("An error occurred while trying to generate the apk.");
             }
-            ActionLogger.log(`[INFO] Create apk android`);
+            ActionLogger.log(`[GRADLEW] Create apk android`);
         });
     }
 }
@@ -12508,6 +12509,7 @@ var gradlew_decode_keystore_usecase_awaiter = (undefined && undefined.__awaiter)
     });
 };
 
+
 class GradlewDecodeKeystore {
     constructor(_input, _io) {
         this._input = _input;
@@ -12520,6 +12522,7 @@ class GradlewDecodeKeystore {
             const keystoreFilename = this._input.keystoreFilename;
             const dest = external_path_default().join(keystorePath, keystoreFilename);
             yield this._io.writeFile(dest, Buffer.from(keystoreBase64, "base64"));
+            ActionLogger.log(`[DECODE] Create file keystore in "${dest}"`);
         });
     }
 }
@@ -12572,7 +12575,7 @@ class ReactNativeGeneratorBundleAndroidUseCase {
             if (!success) {
                 throw new Error("There was an error trying to generate the android bundle.");
             }
-            ActionLogger.log(`[INFO] Generate bundle apk`);
+            ActionLogger.log(`[REACT-NATIVE] Generate bundle apk`);
             yield this._clearFolders();
         });
     }
@@ -12583,13 +12586,13 @@ class ReactNativeGeneratorBundleAndroidUseCase {
             if (resError) {
                 throw new Error('An error occurred while trying to remove the "raw" folder.');
             }
-            ActionLogger.log(`[INFO] Remove folder 'raw'`);
+            ActionLogger.log(`[IO] Remove folder 'raw'`);
             const folders = yield this._glob.directories(`${pathRes}/drawable-*`);
             const [__, drawableError] = yield onTry(this._io.remove(folders));
             if (drawableError) {
                 throw new Error('An error occurred while trying to remove duplicate "drawable-*" folders.');
             }
-            ActionLogger.log(`[INFO] Remove folders 'drawable-*'`);
+            ActionLogger.log(`[IO] Remove folders 'drawable-*'`);
         });
     }
 }

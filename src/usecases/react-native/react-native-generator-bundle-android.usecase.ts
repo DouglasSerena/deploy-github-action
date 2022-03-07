@@ -25,7 +25,7 @@ export class ReactNativeGeneratorBundleAndroidUseCase
                 "There was an error trying to generate the android bundle."
             );
         }
-        ActionLogger.log(`[INFO] Generate bundle apk`);
+        ActionLogger.log(`[REACT-NATIVE] Generate bundle apk`);
 
         await this._clearFolders();
     }
@@ -39,7 +39,7 @@ export class ReactNativeGeneratorBundleAndroidUseCase
                 'An error occurred while trying to remove the "raw" folder.'
             );
         }
-        ActionLogger.log(`[INFO] Remove folder 'raw'`);
+        ActionLogger.log(`[IO] Remove folder 'raw'`);
 
         const folders = await this._glob.directories(`${pathRes}/drawable-*`);
 
@@ -49,6 +49,6 @@ export class ReactNativeGeneratorBundleAndroidUseCase
                 'An error occurred while trying to remove duplicate "drawable-*" folders.'
             );
         }
-        ActionLogger.log(`[INFO] Remove folders 'drawable-*'`);
+        ActionLogger.log(`[IO] Remove folders 'drawable-*'`);
     }
 }

@@ -1,6 +1,7 @@
 import path from "path";
 import { IActionInput } from "../../core/actions/action-input.interface";
 import { IActionIo } from "../../core/actions/action-io.interface";
+import { ActionLogger } from "../../core/actions/action-logger";
 import { IGradlewDecodeKeystore } from "./gradlew-decode-keystore-usecase.interface";
 
 export class GradlewDecodeKeystore implements IGradlewDecodeKeystore {
@@ -13,5 +14,6 @@ export class GradlewDecodeKeystore implements IGradlewDecodeKeystore {
         const dest = path.join(keystorePath, keystoreFilename);
 
         await this._io.writeFile(dest, Buffer.from(keystoreBase64, "base64"));
+        ActionLogger.log(`[DECODE] Create file keystore in "${dest}"`);
     }
 }

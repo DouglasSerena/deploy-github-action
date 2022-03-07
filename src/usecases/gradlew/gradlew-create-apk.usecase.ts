@@ -15,6 +15,6 @@ export class GradlewCreateApkUseCase implements IGradlewCreateApkUseCase {
                 "An error occurred while trying to generate the apk."
             );
         }
-        ActionLogger.log(`[INFO] Create apk android`);
+        ActionLogger.log(`[GRADLEW] Create apk android`);
     }
 }
